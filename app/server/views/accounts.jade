@@ -1,0 +1,18 @@
+
+extends layout
+
+block content
+	div.container(style='margin:20px')
+		table(style="border:1px solid black;")
+			thead
+				tr
+					th(style='width:40px') #
+					th(style='width:180px') Name
+					th(style='width:180px') Username
+					th(style='width:180px') Email
+					th Account Created
+					th Private Surveys
+					th Public Surveys
+			tbody#info
+	script(src='/vendor/jquery.min.js')
+	script(src='/js/views/accounts.js')

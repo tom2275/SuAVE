@@ -1,0 +1,41 @@
+extends layout
+
+block content
+	nav.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+		.container-fluid
+			.navbar-header
+				a.navbar-brand(href='/home')
+					span SuAVE
+				ul.user-menu(style="margin-right:20px;")
+					li.dropdown.pull-right
+						a.dropdown-toggle(href='/home', data-toggle='dropdown')
+							svg.glyph.stroked.male-user
+								use(xlink:href='#stroked-male-user')
+							|  User
+							span.caret
+						ul.dropdown-menu(role='menu')
+							li
+								a#btn-back
+									svg.glyph.stroked.arrow.left
+										use(xlink:href='#stroked-arrow-left')
+									|  Back
+							li
+								a#btn-logout
+									svg.glyph.stroked.cancel
+										use(xlink:href='#stroked-cancel')
+									|  Logout
+
+	include account
+	include modals/alert
+	include modals/confirm
+
+block scripts
+	link(rel='stylesheet', href='/vendor/bootstrap.min.css')
+	link(rel='stylesheet', href='/css/home.css')
+	script(src='/vendor/lumino.glyphs.js')
+	script(src='/vendor/jquery.min.js')
+	script(src='/vendor/jquery.form.js')
+	script(src='/vendor/bootstrap.min.js')
+	script(src='/js/views/update.js')
+	script(src='/js/controllers/updateController.js')
+	script(src='/js/form-validators/accountValidator.js')

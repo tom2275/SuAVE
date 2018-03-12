@@ -1,0 +1,46 @@
+
+extends layout
+
+block content
+	.navbar.navbar-fixed-top(style="background-color: #000000;")
+		.navbar-inner
+			div.container-fluid
+				.row#home-button
+					.col-xs-2
+						ul#global-nav.nav.pull-left
+							a(href='#').navbar-brand SuAVE
+					.col-xs-10
+						button#btn-logout.btn.btn-sm.btn-info.btn-raised.pull-right
+							i.fa.fa-sign-out
+							| Sign Out
+						button#btn-update.btn.btn-sm.btn-info.btn-raised.pull-right
+							i.fa.fa-cog
+							| Account
+						button#btn-addNew.btn.btn-sm.btn-info.btn-raised.pull-right
+							i.fa.fa-plus
+							| New Survey
+
+	#main-container.container(style="width:100%;")
+		.row#display-surveys
+
+	include modals/alert
+	include modals/new-survey
+	include modals/select-collection
+	include modals/loading
+
+block scripts
+	link(rel='stylesheet', href='/style/bootstrap.min.css')
+	link(rel='stylesheet', href='/vendor/bootstrap-material-design.min.css')
+	link(rel='stylesheet', href='/vendor/ripples.min.css')
+	link(rel='stylesheet', href='/css/home.css')
+	script(src='/vendor/jquery.min.js')
+	script(src='/vendor/bootstrap.min.js')
+	script(src='/vendor/jquery.form.js')
+	script(src='/vendor/bootstrap-transition.js')
+	script(src='/js/views/home.js')
+	script(src='/js/controllers/homeController.js')
+	script(src='/js/data/imageJson.js')
+	script(src='/vendor/jquery.ddslick.min.js')
+	script(type='text/javascript').
+		var user=!{udata}
+		var name=!{name}

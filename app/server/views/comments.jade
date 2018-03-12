@@ -1,0 +1,120 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    title SuAVE - Comments
+    link(href='/vendor/bootstrap.min.css', rel='stylesheet')
+    link(href='/vendor/bootstrap-table.css', rel='stylesheet')
+    link(href='/css/home.css', rel='stylesheet')
+    link(rel='stylesheet', href='/css/table.css')
+    link(rel='stylesheet', href='/css/radio.css')
+    // Icons
+    script(src='/vendor/lumino.glyphs.js')
+    script(type='text/javascript', src='/vendor/gc-loader.js')
+    script(type='text/javascript', src='https://www.google.com/jsapi')
+    script(type='text/javascript', src='/vendor/google-analytics.js')
+
+  body
+    nav.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+      .container-fluid
+        .navbar-header
+          button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#sidebar-collapse')
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.navbar-brand(href='/home')
+            span SuAVE
+          ul.user-menu
+            li.dropdown.pull-right
+              a.dropdown-toggle(href='#', data-toggle='dropdown')
+                svg.glyph.stroked.male-user
+                  use(xlink:href='#stroked-male-user')
+                |  User
+                span.caret
+              ul.dropdown-menu(role='menu')
+                li
+                  a#btn-update
+                    svg.glyph.stroked.male-user
+                      use(xlink:href='#stroked-male-user')
+                    |  Profile
+                li
+                  a#btn-logout
+                    svg.glyph.stroked.cancel
+                      use(xlink:href='#stroked-cancel')
+                    |  Logout
+      // /.container-fluid
+    #sidebar-collapse.col-sm-3.col-lg-2.sidebar
+      form(role='search')
+        .form-group
+          input.form-control(type='text', placeholder='Search')
+      ul.nav.menu
+        li
+          a(href='/home')
+            svg.glyph.stroked.app-window
+              use(xlink:href='#stroked-app-window')
+            |  Gallery
+        li.active
+          a(href='/comments')
+            svg.glyph.stroked.notepad
+              use(xlink:href='#stroked-notepad')
+            |  Annotations
+    // /.sidebar
+    .col-sm-9.col-sm-offset-3.col-lg-10.col-lg-offset-2.main
+
+      .row
+        .col-lg-12
+          h1.page-header Comments
+      // /.row
+      .row
+        .col-lg-12
+          .panel.panel-default
+            .panel-body
+              #toolbar.row
+                .col-xs-5
+                  button.btn.btn-sm.btn-danger#delete-comments Delete
+                .col-xs-5
+                  button.btn.btn-sm.btn-primary#para-toggle Detailed
+              table#comments-table(data-show-export="true", data-toolbar="#toolbar", data-toggle='table', data-detail-view='true', data-detail-formatter="detailFormatter", data-show-refresh='true', data-show-toggle='true', data-show-columns='true', data-search='true', data-select-item-name='toolbar1', data-pagination='true', data-sort-name='date', data-sort-order='desc')
+                thead
+                  tr
+                    th(data-checkbox='true')
+                    th(data-field='content', data-sortable='true') Comment
+                    th(data-field='type', data-sortable='true') type
+                    th(data-field='commenter', data-sortable='true') User
+                    th(data-field='file', data-sortable='true') File
+                    th(data-field='view', data-sortable='true', data-visible='false') View
+                    th(data-field='category', data-sortable='true', data-visible='false') Category
+                    th(data-field='filters', data-sortable='true', data-visible='false') Filters
+                    th(data-field='date', data-sortable='true') Date
+                    th(data-field='action', data-formatter='actionFormatter', data-events='actionEvents') Action
+
+    include modals/share
+    include modals/alert
+
+    script(src='/vendor/jquery.min.js')
+    script(src='/vendor/bootstrap-table.js')
+    script(src='/vendor/bootstrap-table-export.js')
+    script(src='/vendor/tableExport.js')
+    script(src='/vendor/jquery.ddslick.min.js')
+    script(src='/vendor/bootstrap.min.js')
+    script(src='/vendor/jquery.form.js')
+    script(src='/js/views/comments.js')
+    script(src='/js/controllers/commentsController.js')
+
+    script.
+      var user=!{udata}
+      var name=!{name}
+      !function ($) {
+      $(document).on("click","ul.nav li.parent > a > span.icon", function(){
+      $(this).find('em:first').toggleClass("glyphicon-minus");
+      });
+      $(".sidebar span.icon").find('em:first').addClass("glyphicon-plus");
+      }(window.jQuery);
+      $(window).on('resize', function () {
+      if ($(window).width() > 768) $('#sidebar-collapse').collapse('show')
+      })
+      $(window).on('resize', function () {
+      if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
+      })

@@ -1,0 +1,124 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    script(type='text/javascript', src='/vendor/google-analytics.js')
+    title SuAVE
+  body
+    .container-fluid
+      .row
+        .col-sm-10.col-sm-offset-1.col-md-8.col-md-offset-2.col-lg-6.col-lg-offset-3
+          .jumbotron#comment-template
+            .row
+              #chart_div.col-sm-10.col-sm-offset-1(style='display: block;')
+            .row
+              .col-sm-8.col-sm-offset-2
+                #switch-filter(style='text-align:center;')
+            .row
+              .col-sm-8.col-sm-offset-2
+                #button-group
+                  button.btn.btn-raised.btn-info#show-snapshot(type='button') Show
+                  button.btn.btn-raised.btn-info#show-about(type='button') About
+                  button.btn.btn-raised.btn-info#share-snapshot(type='button', data-toggle='modal', data-target='#share-dialog') Share
+            .row#para-panel
+              .col-sm-8.col-sm-offset-2
+                .panel.panel-info
+                  .panel-heading(style="text-align: center;")
+                    h3.panel-title
+                  .panel-body#para-table(style="text-align: center;")
+                    table.table.table-striped.table-hover
+                      tbody#panel-para
+            .row#login-row
+
+      #share-dialog.modal.fade
+        .modal-dialog
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4.modal-title Share
+            .modal-body
+              .row
+                .col-xs-8
+                  textarea(style="width:100%;")#share-link
+                .col-xs-2
+                  button.btn.btn-raised.btn-info#copy-link(type='button' ) Copy Link
+            .modal-footer
+              button.btn.btn-danger(type='button', data-dismiss='modal') Dismiss
+
+      #login-dialog.modal.fade
+        .modal-dialog.login-modal
+          .row
+          .modal-content
+            .modal-header
+              button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+              h4.modal-title Login
+            .modal-body#login-container
+              form#login-form.span4(method='post')
+                .form-group
+                  h3 Welcome to SuAVE!
+                  p.subheading Please Login To Your Account
+                  label Username
+                  input#user-tf.form-control.span4.required(type='text', name='user')
+                  label Password
+                  input#pass-tf.form-control.span4.required(type='password', name='pass')
+                  .container(style="width:100%;")
+                    .row(style="margin-left:-25px;")
+                      .col-xs-6
+                        button#btn-login.btn.btn-info.btn-raised(type='submit')
+                          i.icon-lock.icon-white
+                          | Sign in
+                      .col-xs-6
+                        button.btn.btn-raised.btn-default#rememember-me(type='button')
+                          i#check-icon.fa.fa-dot-circle-o
+                          |  Remember Me
+                  .clear-fix
+                  hr
+                  .btm-links
+                    a#forgot-password Forgot Your Password?
+                    a#create-account(href='/signup' target='_blank') Create An Account
+
+    #get-credentials.modal.fade
+      .modal-dialog(style="margin-top:15%;max-width:450px;")
+        .modal-content
+          .modal-header
+            button.close(data-dismiss='modal') x
+            h3 Retrieve Password
+          .modal-body
+            .form-group
+              form#get-credentials-form.well.span5(method='post')
+                p(style='color: black;') Please enter the email address associated with your account
+                input#email-tf.span5.required(type='text', name='email', style="width:100%;")
+                .alert.alert-error.hide
+                button.close(data-dismiss='alert')
+          .modal-footer(style='padding:10px 15px 10px;')
+            button#cancel.btn-raised.btn.btn-default-(data-dismiss='modal') Cancel
+            button#retrieve-password-submit.btn.btn-raised.btn-info(type='submit') Submit
+
+    .modal-alert.modal.fade
+      .modal-dialog(style="margin-top:15%;max-width:450px;")
+        .modal-content
+          .modal-header
+            button.close(data-dismiss='modal') x
+            h3
+          .modal-body
+            p
+          .modal-footer
+            button(data-dismiss="modal")#ok.btn.btn-raised.btn-danger OK
+
+block scripts
+  script(type='text/javascript', src='/vendor/gc-loader.js')
+  script(type='text/javascript', src='https://www.google.com/jsapi')
+  link(rel='stylesheet', href='/style/bootstrap.min.css')
+  link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css')
+  link(rel='stylesheet', href='/vendor/bootstrap-material-design.min.css')
+  link(rel='stylesheet', href='/vendor/ripples.min.css')
+  link(rel='stylesheet', href='/css/snapshot.css')
+  link(rel='stylesheet', href='/css/login.css')
+  script(src='/lib/jquery/jquery-2.1.3.min.js')
+  script(src='/vendor/jquery.form.js')
+  script(src='/vendor/bootstrap.min.js')
+  script(src='/js/views/snapshot.js')
+  script(src='/js/controllers/snapshotController.js')
+  script(src='/js/form-validators/loginValidator.js')
+  script(src='/js/form-validators/emailValidator.js')

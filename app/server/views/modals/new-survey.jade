@@ -1,0 +1,30 @@
+#modal-new-survey.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(data-dismiss='modal') x
+      .modal-body#new-survey-content
+        h3 Select a csv file to upload:
+        form#new-survey(action='/uploadCSV', method='POST', enctype='multipart/form-data')
+          hr
+          fieldset
+            .control-group
+              input(type='file', name='file', required='required')
+            hr
+            .container(style='width: 100%;')
+              .row
+                .col-xs-6
+                  p.subheading Name the survey:
+                  .control-group
+                    input(type='text', id='new-file-name', name='name', required='required')
+                    p#error-text(style='color:red;')
+                .col-xs-6
+                  p.subheading Image definition(optional):
+                  .control-group
+                    input(type='text', id='new-file-dzc', name='dzc')
+            hr
+            .form-buttons
+              button#new-survey-submit.btn.btn-primary(type='submit') submit
+      .modal-footer
+        h4(style="text-align: left; position: absolute; margin-left:10px") Check out the format of uploading file:
+        button#help-button.btn.btn-raised.btn-default.btn-newSurvey Help

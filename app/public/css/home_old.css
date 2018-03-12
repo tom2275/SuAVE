@@ -1,0 +1,39 @@
+#btn-addNew, #btn-logout, #btn-back, #btn-update{
+  width: 130px;
+  margin-left: 10px;
+}
+
+#home-buttons{
+  float: right;
+}
+
+#new-survey-content{
+  padding-top: 0px;
+}
+
+.modal-alert {
+  margin-top:10%;
+}
+
+
+.modal-loading {
+  margin-top:10%;
+}
+
+img {
+  width: 100%;
+  height: 100%;
+}
+
+.survey-title{
+  text-align: center;
+}
+
+.surveys-click, .surveys-edit, .surveys-delete{
+  width: 100%;
+}
+
+/*
+.jumbotron{
+  margin-left: 20px;
+}*/

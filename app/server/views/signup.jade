@@ -1,0 +1,18 @@
+
+extends layout
+
+block content
+
+	include account
+	include modals/alert
+
+block scripts
+	link(rel='stylesheet', href='/vendor/bootstrap.min.css')
+	link(rel='stylesheet', href='/css/home.css')
+	script(src='/vendor/jquery.min.js')
+	script(src='/vendor/jquery.form.js')
+	script(src='/vendor/bootstrap.min.js')
+	script(src='/js/views/signup.js')
+	script(src='/js/controllers/signupController.js')
+	script(src='/js/form-validators/accountValidator.js')
+	script(type='text/javascript', src='/vendor/google-analytics.js')

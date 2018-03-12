@@ -1,0 +1,48 @@
+#comment-template{
+  margin-top: 5%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+#comments-table, #para-table{
+  overflow-y: auto;
+}
+
+#add-comments{
+  margin-top: 100%;
+}
+
+#share-dialog{
+  margin-top: 20%;
+}
+
+#button-group{
+  display: flex;                   /* establish flex container */
+  flex-direction: row;             /* default value; can be omitted */
+  flex-wrap: nowrap;               /* default value; can be omitted */
+  justify-content: space-between;
+}
+
+
+.comment-num{
+  width: 5%;
+}
+
+.comment-user{
+  width:15%;
+
+}
+
+.comment-content{
+  width:55%;
+}
+
+.comment-date{
+  width: 25%;
+}
+
+#comments-table td{
+  white-space:normal;
+  word-wrap:break-word;
+}

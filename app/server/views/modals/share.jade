@@ -1,0 +1,14 @@
+#share-dialog.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(type='button', data-dismiss='modal', aria-hidden='true') ×
+        h4.modal-title Share
+      .modal-body
+        .row
+          .col-xs-8
+            textarea(style="width:100%;")#share-link
+          .col-xs-2
+            button.btn.btn-primary#copy-link(type='button' ) Copy Link
+      .modal-footer
+        button.btn.btn-danger(type='button', data-dismiss='modal') Dismiss

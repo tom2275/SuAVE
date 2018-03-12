@@ -1,0 +1,113 @@
+.view-button {
+  width: 130px;
+  border-radius: 3px;
+}
+
+.slide-content .col-xs-1{
+  padding-right: 30px;
+}
+
+input.radio:empty {
+  margin-left: -9999px;
+}
+
+input.radio:empty ~ .view-button {
+  position: relative;
+  float: left;
+  line-height: 2.5em;
+  text-indent: 3em;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+input.radio:empty ~ label:before {
+  position: absolute;
+  display: block;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  content: '';
+  width: 2.5em;
+  background: #D1D3D4;
+  border-radius: 3px 0 0 3px;
+}
+
+input.radio:hover:not(:checked) ~ label:before {
+  content:'\2714';
+  text-indent: .9em;
+  color: #ffffff;
+}
+
+input.radio:checked ~ label:before {
+  content:'\2714';
+  text-indent: .9em;
+  color: #ffffff;
+  background-color: #0074cc;
+}
+
+.checkbox-custom, .radio-custom {
+    opacity: 0;
+}
+
+.checkbox-custom, .checkbox-custom-label, .radio-custom, .radio-custom-label {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.checkbox-custom-label, .radio-custom-label {
+    position: relative;
+    width: 110px;
+}
+
+.checkbox-custom + .checkbox-custom-label:before, .radio-custom + .radio-custom-label:before {
+    content: '';
+    background: #fff;
+    border: 2px solid #ddd;
+    display: inline-block;
+    vertical-align: middle;
+    width: 35px;
+    height: 35px;
+    padding: 2px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.checkbox-custom:checked + .checkbox-custom-label:before {
+    background: #0074cc;
+}
+
+.radio-custom + .radio-custom-label:before {
+    border-radius: 50%;
+}
+
+.radio-custom:checked + .radio-custom-label:before {
+    background: #0074cc;
+}
+
+
+.checkbox-custom:focus + .checkbox-custom-label, .radio-custom:focus + .radio-custom-label {
+  outline: 1px solid #ddd; /* focus style */
+}
+
+.dd-options  {
+    max-height: 300px;
+}
+
+.dd-option {
+    max-height: 60px;
+}
+
+.dd-selected{
+  max-height: 50px;
+}
+
+
+.modal-select-collection .modal-body{
+  overflow-x: hidden;
+  overflow-y: auto;
+}
