@@ -90,47 +90,6 @@ var graphPara = {};
         init: function(options) {
             _self = this;
             _self.addClass('pv-wrapper');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             $(document).on("contextmenu", function() {
                 return false;
             })
@@ -1893,8 +1852,15 @@ var graphPara = {};
                 Settings.showMissing = false;
                 Settings.visibleCategories = [];
                 for (var i = 0; i < PivotCollection.categories.length; i++) {
-                    Settings.visibleCategories.push(i);
-                    Settings.visibleCategories[PivotCollection.categories[i].name] = true;
+                    //#hiddenMore functionality
+                    if(PivotCollection.categories[i].visIndex != -2){
+                        Settings.visibleCategories.push(i);
+                        Settings.visibleCategories[PivotCollection.categories[i].name] = true;
+                    }else{
+                        Settings.visibleCategories.push(i);
+                        Settings.visibleCategories[PivotCollection.categories[i].name] = false;
+                    }
+                    //--------------------------
                 }
             }
             $.publish("/PivotView/Models/Settings/Loaded");
