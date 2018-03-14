@@ -8,6 +8,7 @@ var path = require('path');
 var loader = require('./collection-loader');
 var GL = require('../global');
 var AN = require('./annotation-manager');
+var geocoder = require('./geocodeAppend');
 
 var dbPort 		= 27017;
 var dbHost 		= 'localhost';
@@ -51,11 +52,13 @@ exports.createNewSurvey = function(files, user, callback){
           if(err){
             callback(err);
           }else{
-						var date = new Date();
-						//save into the database
-            surveys.insert({"fullname":files.body.name ,"name": name, "user": user,
-            "csv": newPath, "view": "grid", "views": 111000, "collection": "default",
-						 "hidden": 0, "date":date.toString(), "originalname": files.file.originalname}, callback);
+						geocoder.processFile(loader,newPath,function(){
+							var date = new Date();
+							//save into the database
+							surveys.insert({"fullname":files.body.name ,"name": name, "user": user,
+							"csv": newPath, "view": "grid", "views": 111000, "collection": "default",
+							"hidden": 0, "date":date.toString(), "originalname": files.file.originalname}, callback);
+						}
           }
         });
 
