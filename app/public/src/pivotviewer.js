@@ -1469,7 +1469,24 @@ var graphPara = {};
                         $('.pagination').show();
                     }
 
-
+                    // Apply filter using search long to select all when pressed "ENTER" 
+                    if(e.keyCode == 13){
+                        var optionExists = ($('#pv-long-search-cat option[value=' + PV.cleanName(category.name) + ']').length > 0);
+                        if(!optionExists)
+                        {
+                            $('#pv-long-search-cat').append($('<option>', {
+                                value: PV.cleanName(category.name),
+                                text: category.name
+                            })); 
+                        }
+                        $('#pv-long-search-cat option[value=' + PV.cleanName(category.name) + ']').prop('selected', 'selected').change();
+                        $('#pv-long-search').val(this.value);
+                        var nextE = $.Event('keyup');
+                        nextE.keyCode = e.keyCode;
+                        $('#pv-long-search').trigger(nextE);
+                        $('#pv-value-search-clear-'+PV.cleanName(category.name)).click();
+                    }
+                    // ----------------------------------------------------
 
                 });
 
