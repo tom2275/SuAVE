@@ -58,6 +58,7 @@ var graphPara = {};
         _ordinalItemTotals = [],
         _longstringFilters = null,
         _longStringCategories = [];
+        _promotedCategories = [];
 
         _stringFilters = [],
         _numericFilters = [],
@@ -918,23 +919,83 @@ var graphPara = {};
         _selectedItem = null;
         var filterList = [],
             longStringFiltered = null,
+            globalStringFiltered = null,
             stringFilters, datetimeFilters, numericFilters, selectedFilters;
         if (filterChange == undefined) {
             if (_longstringFilters != null) {
                 var count = 0;
                 longStringFiltered = [];
+
+                for (var i = 0, _iLen = _tiles.length; i < _iLen; i++) {
+                    longStringFiltered.push(false)
+                }
+                for (var i = 0, _iLen = _tiles.length; i < _iLen; i++) {
+                    var facet = _tiles[i].item.getFacetByName(_longstringFilters.facet);
+                        if(facet != undefined && facet.values.length > 1){
+                            for (var k=0;k<facet.values.length;k++){
+                                if(facet.values[k].value.toLowerCase().indexOf(_longstringFilters.value) >= 0){
+                                    longStringFiltered[i] = (longStringFiltered[i]||true);
+                                    count++
+                                }else{
+                                    longStringFiltered[i] = (longStringFiltered[i]||false);
+                                }
+                            }
+                        }else if (facet != undefined && facet.values.length == 1 && facet.values[0].value.toLowerCase().indexOf(_longstringFilters.value) >= 0) {
+                            longStringFiltered[i] = (longStringFiltered[i]||true);
+                            count++
+                        } else longStringFiltered[i] = (longStringFiltered[i]||false);
+                }
+                /*
                 for (var i = 0, _iLen = _tiles.length; i < _iLen; i++) {
                     var facet = _tiles[i].item.getFacetByName(_longstringFilters.facet);
                     if (facet != undefined && facet.values[0].value.toLowerCase().indexOf(_longstringFilters.value) >= 0) {
                         longStringFiltered[i] = true;
                         count++
                     } else longStringFiltered[i] = false;
+                }*/
+                if (count == 0) {
+                    $("#pv-long-search").css("text-decoration", "line-through").css("color", "red");
+                    return;
+                }
+            }
+
+            // Global search --------------------------------------------------------------------
+            if (_globalStringFilter != null) {
+                var count = 0;
+                globalStringFiltered = [];
+                for (var i = 0, _iLen = _tiles.length; i < _iLen; i++) {
+                    globalStringFiltered.push(false)
+                }
+                _stringCategories = []
+                for (var i = 0; i < PivotCollection.categories.length; i++) {
+                    if((PivotCollection.categories[i].type == "LongString" || PivotCollection.categories[i].type == "String") && PivotCollection.categories[i].isFilterVisible){
+                        _stringCategories.push(PivotCollection.categories[i]);
+                    }        
+                }
+                for (var i = 0, _iLen = _tiles.length; i < _iLen; i++) {
+                    for (var j = 0, _jLen = _stringCategories.length; j < _jLen; j++){
+                        var facet = _tiles[i].item.getFacetByName(_stringCategories[j]["name"]);
+                        if(facet != undefined && facet.values.length > 1){
+                            for (var k=0;k<facet.values.length;k++){
+                                if(facet.values[k].value.toLowerCase().indexOf(_globalStringFilter.value) >= 0){
+                                    globalStringFiltered[i] = (globalStringFiltered[i]||true);
+                                    count++
+                                }else{
+                                    globalStringFiltered[i] = (globalStringFiltered[i]||false);
+                                }
+                            }
+                        }else if (facet != undefined && facet.values.length == 1 && facet.values[0].value.toLowerCase().indexOf(_globalStringFilter.value) >= 0) {
+                            globalStringFiltered[i] = (globalStringFiltered[i]||true);
+                            count++
+                        } else globalStringFiltered[i] = (globalStringFiltered[i]||false);
+                    }
                 }
                 if (count == 0) {
                     $("#pv-long-search").css("text-decoration", "line-through").css("color", "red");
                     return;
                 }
             }
+            //--------------------------------------------------------------------------------------
 
             var checked = $('.pv-facet-value:checked');
             filterList = [];
@@ -1116,6 +1177,13 @@ var graphPara = {};
 
         }
 
+        _stringCategories = []
+        for (var i = 0; i < PivotCollection.categories.length; i++) {
+            if((PivotCollection.categories[i].type == "LongString" || PivotCollection.categories[i].type == "String") && PivotCollection.categories[i].isFilterVisible){
+                _stringCategories.push(PivotCollection.categories[i]);
+            }        
+        }
+
         //Find matching facet values in items
         for (var i = 0, _iLen = _tiles.length; i < _iLen; i++) {
             var tile = _tiles[i];
@@ -1192,6 +1260,23 @@ var graphPara = {};
                     continue;
                 }
             }
+
+            // Global search --------------------------------------------------------------------
+            if (globalStringFiltered != null) {
+                if (!globalStringFiltered[i]) {
+                    tile.filtered = false;
+                    continue;
+                }
+            } else if (_globalStringFilter != null) { //expand = true
+                for (var j = 0, _jLen = _stringCategories.length; j < _jLen; j++){
+                    var facet = _tiles[i].item.getFacetByName(_stringCategories[j]["name"]);
+                    if (facet == undefined || facet.values[0].value.toLowerCase().indexOf(_globalStringFilter.value) < 0) {
+                        tile.filtered = false;
+                        continue;
+                    }
+                }
+            }
+            //----------------------------------------------------------------------------------
 
             for (var k = 0, _kLen = stringFilters.length; k < _kLen; k++) {
                 var facet = tile.item.getFacetByName(stringFilters[k].facet);
@@ -1489,6 +1574,7 @@ var graphPara = {};
                         nextE.keyCode = e.keyCode;
                         $('#pv-long-search').trigger(nextE);
                         $('#pv-value-search-clear-'+PV.cleanName(category.name)).click();
+                        PV.promote(category);
                     }
                     // ----------------------------------------------------
 
@@ -2159,7 +2245,7 @@ var graphPara = {};
             for (var i = 0; i < event.visibleCategories.length; i++) {
                 var category = PivotCollection.categories[event.visibleCategories[i]];
                 if (!category.isFilterVisible) continue;
-                if (category.isLongString()) {
+                if (category.isLongString()){
                     longSearchSelect.append("<option value='" + PV.cleanName(category.name) + "'>" + category.name + "</option>");
                     _longStringCategories.push(category);
                 } else {
@@ -2189,8 +2275,8 @@ var graphPara = {};
         var longSearch = ["<div id='pv-long-search-box'><br><select id='pv-long-search-cat'>"];
         var sort = [],
             activeNumber = 0;
-        //longSearch.push("<option value='globalSearch'>Search All Fields</option>");
-        //_longStringCategories.push(category);
+        longSearch.push("<option value='globalSearch'>Search All Fields</option>");
+        _longStringCategories.push(category);
         for (var i = 0; i < PivotCollection.categories.length; i++) {
             var category = PivotCollection.categories[i];
             if (category.isFilterVisible) {
@@ -3485,7 +3571,7 @@ var graphPara = {};
             for (var j = 0; j < Settings.visibleCategories.length; j++) {
                 var index = Settings.visibleCategories[j],
                     category = PivotCollection.categories[index];
-                if (((category.isFilterVisible && !category.isLongString()) || showFilterInvisible) &&
+                if (((category.isFilterVisible && !(category.isLongString()) ) || showFilterInvisible) &&
                     (index == selValue || PV.cleanName(category.name).toLowerCase().indexOf(search) != -1))
                     select.eq(i).append("<option value=" + Settings.visibleCategories[j] + " search='" + PV.cleanName(category.name.toLowerCase()) + "'>" + category.name + "</option>");
             }

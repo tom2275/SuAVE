@@ -70,6 +70,8 @@ PivotViewer.Models.Category = Object.subClass({
     init: function (name, type, isFilterVisible) {
 		this.name = name;
 		this.type = type != null && type != undefined ? type : PivotViewer.Models.FacetType.String;
+		//ENTER select all feature
+		this.promoted = false;
 		//#hiddenMore functionality
 		if(isFilterVisible != null && isFilterVisible != undefined){
 			if(typeof isFilterVisible === 'boolean'){
@@ -104,7 +106,9 @@ PivotViewer.Models.Category = Object.subClass({
 	isOrdinal: function () { return this.type == PivotViewer.Models.FacetType.Ordinal; },
 	isDateTime: function () { return this.type == PivotViewer.Models.FacetType.DateTime; },
 	isLink: function () { return this.type == PivotViewer.Models.FacetType.Link;},
-	isLocation: function () { return this.type == PivotViewer.Models.FacetType.Location;}
+	isLocation: function () { return this.type == PivotViewer.Models.FacetType.Location;},
+	promote: function() { this.promoted = true; },
+	isPromoted: function() { return this.promoted; }
 });
 
 PivotViewer.Models.CategorySort = Object.subClass({
