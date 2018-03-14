@@ -15,6 +15,8 @@
 PivotViewer.Models.Loaders.CSVLoader = PivotViewer.Models.Loaders.ICollectionLoader.subClass({
     init: function(csvUri, proxy) {
         this.csvUriNoProxy = csvUri;
+        this.myStringCat = []
+        this.myPrefixTree = new PrefixTree();
         if (proxy) this.csvUri = proxy + csvUri;
         else this.csvUri = csvUri;
     },
@@ -129,13 +131,15 @@ PivotViewer.Models.Loaders.CSVLoader = PivotViewer.Models.Loaders.ICollectionLoa
                     type = PivotViewer.Models.FacetType.DateTime;
                 else if (categories[i].indexOf("#ordinal", index) !== -1)
                     type = PivotViewer.Models.FacetType.Ordinal;
-                else if (categories[i].indexOf("#long", index) !== -1)
+                else if (categories[i].indexOf("#long", index) !== -1) {
                     type = PivotViewer.Models.FacetType.LongString;
-                else if (categories[i].indexOf("#link", index) !== -1) {
+                    this.myStringCat.push(i);
+                } else if (categories[i].indexOf("#link", index) !== -1) {
                     type = PivotViewer.Models.FacetType.Link;
                     visible = false;
                 } else if ((categories[i].indexOf("#multi", index) !== -1)) {
                     isMultipleItems = true;
+                    this.myStringCat.push(i);
                     type = PivotViewer.Models.FacetType.String;
                 } else if (categories[i].indexOf("#info", index) !== -1) {
                     info_column = i;
@@ -147,8 +151,15 @@ PivotViewer.Models.Loaders.CSVLoader = PivotViewer.Models.Loaders.ICollectionLoa
                     index = categories[i].indexOf("#textlocation", index);
                 } else {
                     type = PivotViewer.Models.FacetType.String;
+                    this.myStringCat.push(i);
                 }
-                if (categories[i].indexOf("#hidden") !== -1) visible = false;
+                // If #hidden, don't add the word into keyword search
+                if (categories[i].indexOf("#hidden") !== -1){
+                    visible = false;
+                    if($.inArray(i,this.myStringCat)){
+                        this.myStringCat.splice($.inArray(i,this.myStringCat),1);
+                    }
+                }
                 //#hiddenMore functionality
                 if (categories[i].indexOf("#hiddenmore") !== -1){
                     visible = -1;
@@ -157,6 +168,7 @@ PivotViewer.Models.Loaders.CSVLoader = PivotViewer.Models.Loaders.ICollectionLoa
             } else {
                 type = PivotViewer.Models.FacetType.String;
                 index = categories[i].length;
+                this.myStringCat.push(i);
             }
             var category = new PivotViewer.Models.Category(categories[i].substring(0, index), type, visible);
             category.column = i;
@@ -170,7 +182,14 @@ PivotViewer.Models.Loaders.CSVLoader = PivotViewer.Models.Loaders.ICollectionLoa
 	    for ( var c = 0; c < row.length; c++ )
 		row[c] = he.encode( row[c], {
 		    'allowUnsafeSymbols': true
-		} );
+        } );
+        // Add word in prefixTree for keyword auto complete
+        for(var j=0;j<this.myStringCat.length;j++){
+            var ss = row[this.myStringCat[j]].replace(/[^0-9a-z]/gi,' ').split(" ");
+            for (var k = 0; k < ss.length; k++){
+                this.myPrefixTree.addWord(ss[k].toLowerCase());
+            }
+        }
             var item = new PivotViewer.Models.Item(row[img_column], String(i), href_column == -1 ? "" : row[href_column], row[name_column]);
             if (info_column != -1) {
 
