@@ -271,5 +271,8 @@ PivotViewer.Models.Loaders.CSVLoader = PivotViewer.Models.Loaders.ICollectionLoa
             facets.push(f);
         }
         return facets;
+    },
+    getTree: function(){
+        return this.myPrefixTree;
     }
 });

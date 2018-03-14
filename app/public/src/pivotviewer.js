@@ -59,10 +59,12 @@ var graphPara = {};
         _longstringFilters = null,
         _longStringCategories = [];
 
-    _stringFilters = [],
+        _stringFilters = [],
         _numericFilters = [],
         _datetimeFilters = [],
         _selectedFilters = [],
+        _globalStringFilter = null,
+        _stringCategories = [];
         _currentView = 0,
         _sortCategory = null,
         _tiles = [],
@@ -76,7 +78,8 @@ var graphPara = {};
         _enabledView = [],
         _options = {},
         _rEnable = false,
-        _listObj = {};
+        _listObj = {},
+        _myTree = null;
 
     if (_options.authoring == true) {
         PARA.y_axis = null;
@@ -141,6 +144,7 @@ var graphPara = {};
                     Loader = options.Loader;
                     PV._initCollectionLoader(options);
                 }
+                _myTree = Loader.getTree();
 
             }).fail(function(jqxhr, textStatus, error) {
                 var err = textStatus + ", " + error;
@@ -2185,6 +2189,8 @@ var graphPara = {};
         var longSearch = ["<div id='pv-long-search-box'><br><select id='pv-long-search-cat'>"];
         var sort = [],
             activeNumber = 0;
+        //longSearch.push("<option value='globalSearch'>Search All Fields</option>");
+        //_longStringCategories.push(category);
         for (var i = 0; i < PivotCollection.categories.length; i++) {
             var category = PivotCollection.categories[i];
             if (category.isFilterVisible) {
@@ -2228,22 +2234,67 @@ var graphPara = {};
             $(".pv-filterpanel").append(longSearch.join('') + "<span class='pv-search-clear' id='pv-long-search-clear'>&nbsp;</span><input type=text length=25 id='pv-long-search' placeholder='Search text...'>");
             $("#pv-long-search").on("keyup", function(e) {
                 var input = this.value.toLowerCase();
+                // Global Search suggestion
+                if($("#pv-long-search-cat option:selected").val() == "globalSearch"){
+                    var suggestions = _myTree.topFive(input.toLowerCase());
+                    var optionString = ""
+                    if(suggestions.length > 0){
+                        for(var k=0;k<suggestions.length;k++){
+                            optionString += ('<option value="' + suggestions[k] + '">');
+                        }
+                    }
+                    $("#pv-long-search").attr("list","suggestions");
+                    if($("#suggestions").length == 0){
+                        $("#pv-long-search").after('<datalist id="suggestions">'+ optionString +'</datalist>');
+                    }else{
+                        $("#suggestions").remove();
+                        $("#pv-long-search").after('<datalist id="suggestions">'+ optionString +'</datalist>');
+                    }
+                }else{
+                    $("#suggestions").remove();
+                }
+                // Global Search suggestion End
                 if (e.keyCode == 13) {
                     var category = PivotCollection.getCategoryByName([$("#pv-long-search-cat option:selected").text()]);
-                    if (!category.uiInit) {
-                        Loader.loadColumn(category);
-                        category.uiInit = true;
+                    // Need to load all string category to ui for recounting
+                    //TODO:
+                    // This can be improve by asking the prefixTree which category is the string located 
+                    // and just load those category
+                    if (category == null && $("#pv-long-search-cat option:selected").val() == "globalSearch"){
+                        for(var x=0;x<_stringCategories.length;x++){
+                            var category = PivotCollection.getCategoryByName(_stringCategories[x]["name"])
+                            if(!category.uiInit){
+                                PV.initUICategory(category);
+                            }
+                        }
+                        // Global Search start here
+                        LoadSem.acquire(function(release) {
+                            if ($('#pv-long-search').val() != null && $('#pv-long-search').val() != ""){
+                                _globalStringFilter = {
+                                    value: $("#pv-long-search").val().toLowerCase()
+                                };
+                            }
+                            else _globalStringFilter = null;
+                            PV.filterCollection();
+                            release();
+                        });
+                        // End of Global Search
+                    }else{
+                        if (!category.uiInit) {
+                            Loader.loadColumn(category);
+                            category.uiInit = true;
+                        }
+                        LoadSem.acquire(function(release) {
+                            if ($('#pv-long-search').val() != null && $('#pv-long-search').val() != "")
+                                _longstringFilters = {
+                                    facet: $("#pv-long-search-cat option:selected").text(),
+                                    value: $("#pv-long-search").val().toLowerCase()
+                                };
+                            else _longstringFilters = null;
+                            PV.filterCollection();
+                            release();
+                        });
                     }
-                    LoadSem.acquire(function(release) {
-                        if ($('#pv-long-search').val() != null && $('#pv-long-search').val() != "")
-                            _longstringFilters = {
-                                facet: $("#pv-long-search-cat option:selected").text(),
-                                value: $("#pv-long-search").val().toLowerCase()
-                            };
-                        else _longstringFilters = null;
-                        PV.filterCollection();
-                        release();
-                    });
                 } else $("#pv-long-search").css("text-decoration", "").css("color", "black");
                 $("#pv-long-search-clear").css("visibility", "visible");
             });
@@ -2254,8 +2305,13 @@ var graphPara = {};
                     _longstringFilters = null;
                     PV.filterCollection();
                 }
+                if (_globalStringFilter != null) {
+                    _globalStringFilter = null;
+                    PV.filterCollection();
+                }
             });
             $("#pv-long-search-cat").on("mousedown", function(e) {
+                $("#suggestions").remove();
                 if ($(this).attr("dirty") == 1) {
                     $("#pv-long-search-cat option").remove();
                     var search = $('.pv-filterpanel-search').val();
@@ -2714,6 +2770,7 @@ var graphPara = {};
             $(".pv-value-search").val("");
             $(".pv-search-clear").css("visibility", "hidden");
             _longstringFilters = null;
+            _globalStringFilter = null;
             PV.filterCollection();
         });
 
