@@ -32,7 +32,18 @@ PivotViewer.Models.Collection = Object.subClass({
         var _visIndex = 0;
         this.categories.push = function (x) {
             x.index = _catIndex++;
-            x.visIndex = x.isFilterVisible ? _visIndex++ : -1;
+            //#hiddenMore functionality
+			if(x.isFilterVisible){
+				x.visIndex = _visIndex++;
+			}else{
+				if(x.isVisibleOnRight){
+					x.visIndex = -1;
+				}else{
+					x.visIndex = -2;
+				}
+			}
+			//--------------------------
+            //x.visIndex = x.isFilterVisible ? _visIndex++ : -1;
             this.__proto__.push.apply(that.categories, [x]);
             that._categoriesByName[x.name] = x;
             that._categoriesByName[x.name.toLowerCase()] = x;
@@ -59,7 +70,20 @@ PivotViewer.Models.Category = Object.subClass({
     init: function (name, type, isFilterVisible) {
 		this.name = name;
 		this.type = type != null && type != undefined ? type : PivotViewer.Models.FacetType.String;
-		this.isFilterVisible = isFilterVisible != null && isFilterVisible != undefined ? isFilterVisible : true; // does it show up in the filter (left panel)
+		//#hiddenMore functionality
+		if(isFilterVisible != null && isFilterVisible != undefined){
+			if(typeof isFilterVisible === 'boolean'){
+				this.isFilterVisible = isFilterVisible;
+				this.isVisibleOnRight = true;
+			}else{
+				this.isFilterVisible = false;
+				this.isVisibleOnRight = false;
+			}
+		}else{
+			this.isFilterVisible = true
+		}
+		//--------------------------
+		//this.isFilterVisible = isFilterVisible != null && isFilterVisible != undefined ? isFilterVisible : true; // does it show up in the filter (left panel)
 		this.recount = true; this.uiInit = false; this.doFilter = true;
 		this.datetimeBuckets = [];
 		this.customSort = null;
