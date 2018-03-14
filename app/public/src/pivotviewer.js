@@ -90,47 +90,6 @@ var graphPara = {};
         init: function(options) {
             _self = this;
             _self.addClass('pv-wrapper');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             $(document).on("contextmenu", function() {
                 return false;
             })

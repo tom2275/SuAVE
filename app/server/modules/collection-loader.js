@@ -455,6 +455,10 @@ exports.getColumnsAndTags = function(user, name, callback){
                 tmp.values.push('#textlocation');
                 names[i] = names[i].replace('#textlocation', '');
               }
+              if(names[i].indexOf('#hiddenmore') > -1){
+                tmp.values.push('#hiddenmore');
+                names[i] = names[i].replace('#hiddenmore', '');
+              }
               if(names[i].indexOf('#hidden') > -1){
                 tmp.values.push('#hidden');
                 names[i] = names[i].replace('#hidden', '');
