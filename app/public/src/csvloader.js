@@ -149,6 +149,11 @@ PivotViewer.Models.Loaders.CSVLoader = PivotViewer.Models.Loaders.ICollectionLoa
                     type = PivotViewer.Models.FacetType.String;
                 }
                 if (categories[i].indexOf("#hidden") !== -1) visible = false;
+                //#hiddenMore functionality
+                if (categories[i].indexOf("#hiddenmore") !== -1){
+                    visible = -1;
+                } 
+                //--------------------------
             } else {
                 type = PivotViewer.Models.FacetType.String;
                 index = categories[i].length;
