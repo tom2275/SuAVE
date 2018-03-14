@@ -98,7 +98,7 @@ var sMemory = false;
 				$('.modal-select-collection .modal-dialog .modal-body').prepend(
 					'<div class="panel panel-primary">'+
 						'<div class="panel-heading" id="tags-heading">'+
-							'Tags: number, date, long, link, ordinal, multi, textlocation, info, hidden'+
+							'Tags: number, date, long, link, ordinal, multi, textlocation, info, hiddenmore, hidden'+
 						'</div>'+
 					'</div>'+
 					'<div class="dropdown">'+
@@ -142,7 +142,8 @@ var sMemory = false;
 									'<option data-subtext="will be shown as a short description for the row">#info</option>'+
 							  '</optgroup>'+
 							  '<optgroup label="Hidden in Filter Panel" data-max-options="1">'+
-							    '<option data-subtext="won’t appear in the filter panel or in the sorting dropdown list">#hidden</option>'+
+								'<option data-subtext="won’t appear in the filter panel or in the sorting dropdown list">#hidden</option>'+
+								'<option data-subtext="Same as hidden and the right info panel">#hiddenmore</option>'+
 							  '</optgroup>'+
 							'</select>'+
 						'</a>'
@@ -205,6 +206,7 @@ $(document).on('click', '#tag-item-select li', function(){
 				'</optgroup>'+
 				'<optgroup label="Hidden in Filter Panel" data-max-options="1">'+
 					'<option data-subtext="won’t appear in the filter panel or in the sorting dropdown list">#hidden</option>'+
+					'<option data-subtext="Same as hidden and the right info panel">#hiddenmore</option>'+
 				'</optgroup>'+
 			'</select>'+
 		'</a>'
