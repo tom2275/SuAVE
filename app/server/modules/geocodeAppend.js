@@ -55,7 +55,6 @@ changeFieldName = function(myfile,callbackFunction){
 };
 
 geocoder = function(data,locName,callbackFunction){
-    console.log("geocoder called");
     /* Since datasciencetoolkit server is down, use random number for testing */
     //latitude = (Math.random() * (33.000000 - 48.000000) + 48.000000).toFixed(6)
     //longitude =  (Math.random() * (67.000000 + 123.000000) - 123.000000).toFixed(6)
