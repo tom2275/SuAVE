@@ -58,7 +58,7 @@ exports.createNewSurvey = function(files, user, callback){
 							surveys.insert({"fullname":files.body.name ,"name": name, "user": user,
 							"csv": newPath, "view": "grid", "views": 111000, "collection": "default",
 							"hidden": 0, "date":date.toString(), "originalname": files.file.originalname}, callback);
-						}
+						});
           }
         });
 
