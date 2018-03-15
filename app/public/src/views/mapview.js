@@ -50,7 +50,7 @@ PivotViewer.Views.MapView = PivotViewer.Views.IPivotViewerView.subClass({
         this.selectedMarker = null;
         this.selectedGeometry = null;
         this.selectedBucket = -1;
-        this.infoWindow = null;
+        //this.infoWindow = null;
 
         var that = this;
         $.subscribe("/PivotViewer/Views/Item/Selected", function (evt) {
@@ -100,8 +100,8 @@ PivotViewer.Views.MapView = PivotViewer.Views.IPivotViewerView.subClass({
 						keepSpiderfied: true,
 						circleSpiralSwitchover: 20
         });
-        this.infoWindow = new google.maps.InfoWindow();
-        this.anchor = new google.maps.Marker();
+        //this.infoWindow = new google.maps.InfoWindow();
+        //this.anchor = new google.maps.Marker();
         if (markercluster_ok) {
 						this.markerCluster = new MarkerClusterer(this.map,
 				[],
@@ -115,8 +115,8 @@ PivotViewer.Views.MapView = PivotViewer.Views.IPivotViewerView.subClass({
         this.map.data.addListener('mouseover', function(event) {
             this.map.data.revertStyle();
             this.map.data.overrideStyle(event.feature, {strokeWeight: 8, zindex:1000});
-            that.infoWindow.setContent(event.feature.getProperty("itemName"));
-            var ll = new google.maps.LatLng({lat: that.mouseLat, lng: that.mouseLng});
+            //that.infoWindow.setContent(event.feature.getProperty("itemName"));
+            //var ll = new google.maps.LatLng({lat: that.mouseLat, lng: that.mouseLng});
            // that.anchor.setPosition(ll);
             //that.infoWindow.setPosition({lat: that.mouseLat, lng: that.mouseLng});
             //that.infoWindow.open(this.map, that.anchor);
@@ -538,16 +538,24 @@ red to yellow to green to blue
                                title: this.message
                              });
             tile.marker.setIcon(this.icons[this.buckets.ids[tile.item.id]]);
+            var timer = null; // Single click timeout.
 
                 google.maps.event.addListener(tile.marker,
                           "click",
                           (function (tile) {
+                            return function () {
+                                if ( timer != null )
+                                    clearTimeout( timer )
+                                timer = 
+                                    setTimeout(
+                                    function () {
+                                        $.publish("/PivotViewer/Views/Item/Selected", [{
+                                            item: tile}
+                                        ]);
+                                    }
+                                )
+                            }
 
-
-                              return function () {
-                              $.publish("/PivotViewer/Views/Item/Selected", [{
-                                  item: tile}
-                                                    ]);}
                           })(tile));
 
             //spl:072117 Double click handler
@@ -861,7 +869,21 @@ red to yellow to green to blue
         $('#MAIN_BODY').css('overflow', 'auto');
         $('.pv-mapview-canvas').fadeIn();
         $('.pv-toolbarpanel-sort').fadeIn();
-        if(this.map != null) {this.refitBounds();}
+        if(this.map != null) {
+            this.refitBounds();
+            // spl:091117 There appears to be a bug in how marker clusters
+            // get repainted.
+            
+            //<https://stackoverflow.com/questions/20861402/markers-not-showing-until-map-moved-slightly-or-clicked>
+            
+            // This hack attempts to fix the issue until the author
+            // manages to actually repair it
+            this.markerCluster.repaint();
+            var that = this;
+            setTimeout( function() {
+                that.markerCluster.repaint();
+            }, 500 );
+        }
     },
     deactivate: function () {
         this._super();
@@ -1321,8 +1343,8 @@ red to yellow to green to blue
 
     },
     createMarkers: function () {
-        if(this.clearMarkers)
-	    this.clearMarkers();
+        //if(this.clearMarkers)
+	    //this.clearMarkers();
 
         //spl:071517 Removed redundant clearing of individual markers.
 
