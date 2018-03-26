@@ -2466,6 +2466,7 @@ var graphPara = {};
             }
             var viewName = PivotCollection.config.views[i];
             PivotViewer.Utils.loadScript("src/views/" + viewName.toLowerCase() + "view.js");
+            //PivotViewer.Utils.loadScript("src/views/" + viewName.toLowerCase() + "view.min.js");
             eval("var view = new PivotViewer.Views." + viewName.charAt(0).toUpperCase() + viewName.substring(1) + "View()");
             view.setOptions(_options);
             _views.push(view);
