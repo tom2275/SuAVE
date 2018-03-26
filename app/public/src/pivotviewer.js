@@ -1975,6 +1975,7 @@ var graphPara = {};
     });
 
     $.subscribe("/PivotView/Models/Settings/Loaded", function(event) {
+        console.log("/PivotView/Models/Settings/Loaded");
         //toolbar
         var toolbarPanel = "<div class='pv-toolbarpanel'>";
 
@@ -2271,16 +2272,17 @@ var graphPara = {};
     });
 
     $.subscribe("/PivotViewer/ImageController/Collection/Loaded", function(event) {
-
         var facets = ["<div class='pv-filterpanel-accordion'>"];
         var longSearch = ["<div id='pv-long-search-box'><br><select id='pv-long-search-cat'>"];
         var sort = [],
             activeNumber = 0;
+        var isVisibleCounter = 0
         longSearch.push("<option value='globalSearch'>Search All Fields</option>");
         _longStringCategories.push(category);
         for (var i = 0; i < PivotCollection.categories.length; i++) {
             var category = PivotCollection.categories[i];
             if (category.isFilterVisible) {
+                isVisibleCounter++;
                 if (category.isLongString() || category.isPromoted()) {
                     longSearch.push("<option value='" + PV.cleanName(category.name.toLowerCase()) + "'>" + category.name + "</option>");
                     _longStringCategories.push(category);
@@ -2315,6 +2317,9 @@ var graphPara = {};
                     sort.push("<option value='" + i + "' search='" + PV.cleanName(category.name.toLowerCase()) + "'>" + category.name + "</option>");
                 }
             }
+        }
+        if(isVisibleCounter < 20){
+            $(".pv-filterpanel-search-box").css("display","none");
         }
         if (longSearch.length > 1) {
             longSearch.push("</div></select>");
