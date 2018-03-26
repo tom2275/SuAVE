@@ -2246,6 +2246,7 @@ var graphPara = {};
                 var category = PivotCollection.categories[event.visibleCategories[i]];
                 if (!category.isFilterVisible) continue;
                 if (category.isLongString()){
+                    longSearchSelect.append("<option value='globalSearch'>Search All Fields</option>");
                     longSearchSelect.append("<option value='" + PV.cleanName(category.name) + "'>" + category.name + "</option>");
                     _longStringCategories.push(category);
                 } else {
@@ -2401,8 +2402,9 @@ var graphPara = {};
                 if ($(this).attr("dirty") == 1) {
                     $("#pv-long-search-cat option").remove();
                     var search = $('.pv-filterpanel-search').val();
-                    for (var i = 0; i < _longStringCategories.length; i++) {
-                        var category = _longStringCategories[i],
+                    $("#pv-long-search-cat").append("<option value='globalSearch'>Search All Fields</option>");
+                    for (var i = 1; i < _longStringCategories.length; i++) {
+                        var category = _longStringCategories[i];
                             clean = PV.cleanName(category.name);
                         if (search != "" && clean.indexOf(search) < 0) continue;
                         $("#pv-long-search-cat").append("<option value='" + PV.cleanName(category.name) + "'>" + category.name + "</option>");
