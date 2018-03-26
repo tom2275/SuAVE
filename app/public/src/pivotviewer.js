@@ -1574,7 +1574,7 @@ var graphPara = {};
                         nextE.keyCode = e.keyCode;
                         $('#pv-long-search').trigger(nextE);
                         $('#pv-value-search-clear-'+PV.cleanName(category.name)).click();
-                        PV.promote(category);
+                        category.promote();
                     }
                     // ----------------------------------------------------
 
@@ -2280,7 +2280,7 @@ var graphPara = {};
         for (var i = 0; i < PivotCollection.categories.length; i++) {
             var category = PivotCollection.categories[i];
             if (category.isFilterVisible) {
-                if (category.isLongString()) {
+                if (category.isLongString() || category.isPromoted()) {
                     longSearch.push("<option value='" + PV.cleanName(category.name.toLowerCase()) + "'>" + category.name + "</option>");
                     _longStringCategories.push(category);
                 } else {
