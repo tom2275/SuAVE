@@ -67,7 +67,7 @@ PivotViewer.Models.Collection = Object.subClass({
 
 //PivotViewer.Models
 PivotViewer.Models.Category = Object.subClass({
-    init: function (name, type, isFilterVisible) {
+    init: function (name, type, isFilterVisible,defaultSortQuan) {
 		this.name = name;
 		this.type = type != null && type != undefined ? type : PivotViewer.Models.FacetType.String;
 		//ENTER select all feature
@@ -89,6 +89,7 @@ PivotViewer.Models.Category = Object.subClass({
 		this.recount = true; this.uiInit = false; this.doFilter = true;
 		this.datetimeBuckets = [];
 		this.customSort = null;
+		this.defaultSortQuan = defaultSortQuan;
 		this.labels = [];
     this.isMultipleItems = false; /// this facet can have more than one value
     },

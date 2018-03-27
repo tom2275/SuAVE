@@ -839,8 +839,6 @@ var graphPara = {};
         var facetList = $("#pv-cat-" + PivotViewer.Utils.escapeMetaChars(PV.cleanName(facetName)) + " .pv-filterpanel-accordion-facet-list");
         var sortType = facetList.prev().text().replace("Sort: ", "");
         if (sortType == "A-Z") {
-
-
             _listObj[PV.cleanName(facetName)].sort('pv-facet-value-label', {
                 order: "asc",
 		sortFunction: function( a, b, c ) {
@@ -1508,9 +1506,16 @@ var graphPara = {};
 
 
 
-                if (category.customSort != undefined || category.customSort != null)
+                if (category.customSort != undefined || category.customSort != null){
                     uiFacet.append("<span class='pv-filterpanel-accordion-facet-sort' customSort='" + category.customSort.name + "'>Sort: " + category.customSort.name + "</span>");
-                else uiFacet.append("<span class='pv-filterpanel-accordion-facet-sort'>Sort: A-Z</span>");
+                }
+                else {
+                    if(category.defaultSortQuan){
+                        uiFacet.append("<span class='pv-filterpanel-accordion-facet-sort'>Sort: Quantity</span>");
+                    }else{
+                        uiFacet.append("<span class='pv-filterpanel-accordion-facet-sort'>Sort: A-Z</span>");
+                    }   
+                }
                 uiFacet.append(PV._createStringFilters(category.name));
 
                 var item = _itemTotals[category.name];
@@ -1519,6 +1524,7 @@ var graphPara = {};
                     total.valueItem = $("#" + total.id);
                     total.itemCount = total.valueItem.find('span').last();
                 }
+
                 $("#pv-value-search-" + PV.cleanName(category.name)).on('keyup', function(e) {
                     var clean = PV.cleanName(category.name),
                         input = PV.cleanName(this.value.toLowerCase());
@@ -1599,8 +1605,6 @@ var graphPara = {};
                 $("#pv-cat-" + PV.cleanName(category.name) + " .pv-filterpanel-accordion-facet-sort").click(function(e) {
                     var sortDiv = $(this),
                         sortText = sortDiv.text(),
-
-
                         facetName = sortDiv.parent().prev().children('a')[0].title;
                     var customSort = sortDiv.attr("customSort");
                     if (sortText == "Sort: A-Z") $(this).text("Sort: Quantity");
@@ -1923,6 +1927,13 @@ var graphPara = {};
             else $('#pv-facet-value-' + PV.cleanName(category.name) + '__' + PV.cleanName("(no info)")).hide();
 
             category.recount = false;
+
+            if(category.defaultSortQuan){
+                _listObj[PV.cleanName(category.name)].sort('pv-facet-value-count', {
+                    order: "desc"
+                });
+            }
+
             release();
         });
     };
@@ -1975,7 +1986,6 @@ var graphPara = {};
     });
 
     $.subscribe("/PivotView/Models/Settings/Loaded", function(event) {
-        console.log("/PivotView/Models/Settings/Loaded");
         //toolbar
         var toolbarPanel = "<div class='pv-toolbarpanel'>";
 

@@ -463,6 +463,10 @@ exports.getColumnsAndTags = function(user, name, callback){
                 tmp.values.push('#hidden');
                 names[i] = names[i].replace('#hidden', '');
               }
+              if(names[i].indexOf('#sortquan') > -1){
+                tmp.values.push('#sortquan');
+                names[i] = names[i].replace('#sortquan', '');
+              }
               if(names[i].indexOf('#multi') > -1){
                 tmp.values.push('#multi');
                 names[i] = names[i].replace('#multi', '');
