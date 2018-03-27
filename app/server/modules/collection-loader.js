@@ -428,6 +428,7 @@ exports.getColumnsAndTags = function(user, name, callback){
 
           for(var i = 0; i < names.length; i++){
             if(names[i].indexOf('#') > -1){
+              console.log(names[i]);
               var tmp = {};
               tmp.values = [];
 
