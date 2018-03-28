@@ -839,8 +839,6 @@ var graphPara = {};
         var facetList = $("#pv-cat-" + PivotViewer.Utils.escapeMetaChars(PV.cleanName(facetName)) + " .pv-filterpanel-accordion-facet-list");
         var sortType = facetList.prev().text().replace("Sort: ", "");
         if (sortType == "A-Z") {
-
-
             _listObj[PV.cleanName(facetName)].sort('pv-facet-value-label', {
                 order: "asc",
 		sortFunction: function( a, b, c ) {
@@ -1374,6 +1372,80 @@ var graphPara = {};
 
         $("#pv-toolbarpanel-countbox").html(_filterList.length);
 
+        //Auto select if only one result
+        if(_filterList.length == 1){
+
+            selectedItem = _filterList[0];
+            var alternate = true;
+            $('.pv-infopanel-heading').empty();
+
+            // suppress href if the item doesn't have href
+            if (selectedItem.item.href == '') {
+                $('.pv-infopanel-heading').append("<a target=\"_blank\">" + selectedItem.item.name + "</a></div>");
+            } else {
+                $('.pv-infopanel-heading').append("<a href=\"" + selectedItem.item.href + "\" target=\"_blank\">" + selectedItem.item.name + "</a></div>");
+            }
+
+            var infopanelDetails = $('.pv-infopanel-details');
+            infopanelDetails.empty();
+            if (selectedItem.item.description != undefined && selectedItem.item.description.length > 0) {
+                infopanelDetails.append("<div class='pv-infopanel-detail-description' style='height:100px;'>" + selectedItem.item.description + "</div><div class='pv-infopanel-detail-description-more'>More</div>");
+                //$('.pv-infopanel-detail-description-more').click();
+            }
+            // nav arrows...
+            if (selectedItem.item.id == _filterList[0].id) {
+                $('.pv-infopanel-controls-navleft').hide();
+                $('.pv-infopanel-controls-navleftdisabled').show();
+            } else {
+                $('.pv-infopanel-controls-navleft').show();
+                $('.pv-infopanel-controls-navleftdisabled').hide();
+            }
+            if (selectedItem.item.id == _filterList[_filterList.length - 1].id) {
+                $('.pv-infopanel-controls-navright').hide();
+                $('.pv-infopanel-controls-navrightdisabled').show();
+            } else {
+                $('.pv-infopanel-controls-navright').show();
+                $('.pv-infopanel-controls-navrightdisabled').hide();
+            }
+
+            var detailDOM = [];
+
+            var facets = Loader.getRow(selectedItem.item.id);
+            for (var i = 0; i < facets.length; i++) {
+                var category = PivotCollection.getCategoryByName(facets[i].name);
+                if (!Settings.visibleCategories[category.name]) continue;
+
+                detailDOM[i] = "<div class='pv-infopanel-detail " + (alternate ? "detail-dark" : "detail-light") + "'><div class='pv-infopanel-detail-item detail-item-title' pv-detail-item-title='" + category.name + "'>" + category.name + "</div>";
+                for (var j = 0; j < facets[i].values.length; j++) {
+                    var value = facets[i].values[j];
+                    detailDOM[i] += "<div pv-detail-item-value='" + value.value +
+                        "' class='pv-infopanel-detail-item detail-item-value" + (category.isFilterVisible ? " detail-item-value-filter" : "") + "'>";
+                    if (value.href != null && value.href != "")
+                        detailDOM[i] += "<a class='detail-item-link' href='" + value.href + "' target='_blank'>" + value.label + "</a>";
+                    else detailDOM[i] += value.label;
+                    detailDOM[i] += "</div>";
+                }
+                detailDOM[i] += "</div>";
+                alternate = !alternate;
+            }
+            if (selectedItem.item.links.length > 0) {
+                $('.pv-infopanel-related').empty();
+                for (var k = 0; k < selectedItem.item.links.length; k++) {
+                    $('.pv-infopanel-related').append("<a href='" + selectedItem.item.links[k].href + "'>" + selectedItem.item.links[k].name + "</a><br>");
+                }
+            }
+            infopanelDetails.append(detailDOM.join(''));
+
+            $('.pv-infopanel').fadeIn();
+
+            infopanelDetails.css('height', ($('.pv-infopanel').height() - ($('.pv-infopanel-controls').height() + $('.pv-infopanel-heading').height() + $('.pv-infopanel-copyright').height() + $('.pv-infopanel-related').height()) - 20) + 'px');
+
+            if (_selectedItem != null) _selectedItem.setSelected(false);
+            selectedItem.setSelected(true);
+            _selectedItem = selectedItem;
+            _views[_currentView].setSelected(_selectedItem);
+        }
+
         //Update breadcrumb
         var bc = $('.pv-toolbarpanel-breadcrumb');
         bc.empty();
@@ -1508,9 +1580,16 @@ var graphPara = {};
 
 
 
-                if (category.customSort != undefined || category.customSort != null)
+                if (category.customSort != undefined || category.customSort != null){
                     uiFacet.append("<span class='pv-filterpanel-accordion-facet-sort' customSort='" + category.customSort.name + "'>Sort: " + category.customSort.name + "</span>");
-                else uiFacet.append("<span class='pv-filterpanel-accordion-facet-sort'>Sort: A-Z</span>");
+                }
+                else {
+                    if(category.defaultSortQuan){
+                        uiFacet.append("<span class='pv-filterpanel-accordion-facet-sort'>Sort: Quantity</span>");
+                    }else{
+                        uiFacet.append("<span class='pv-filterpanel-accordion-facet-sort'>Sort: A-Z</span>");
+                    }   
+                }
                 uiFacet.append(PV._createStringFilters(category.name));
 
                 var item = _itemTotals[category.name];
@@ -1519,6 +1598,7 @@ var graphPara = {};
                     total.valueItem = $("#" + total.id);
                     total.itemCount = total.valueItem.find('span').last();
                 }
+
                 $("#pv-value-search-" + PV.cleanName(category.name)).on('keyup', function(e) {
                     var clean = PV.cleanName(category.name),
                         input = PV.cleanName(this.value.toLowerCase());
@@ -1599,8 +1679,6 @@ var graphPara = {};
                 $("#pv-cat-" + PV.cleanName(category.name) + " .pv-filterpanel-accordion-facet-sort").click(function(e) {
                     var sortDiv = $(this),
                         sortText = sortDiv.text(),
-
-
                         facetName = sortDiv.parent().prev().children('a')[0].title;
                     var customSort = sortDiv.attr("customSort");
                     if (sortText == "Sort: A-Z") $(this).text("Sort: Quantity");
@@ -1923,6 +2001,13 @@ var graphPara = {};
             else $('#pv-facet-value-' + PV.cleanName(category.name) + '__' + PV.cleanName("(no info)")).hide();
 
             category.recount = false;
+
+            if(category.defaultSortQuan){
+                _listObj[PV.cleanName(category.name)].sort('pv-facet-value-count', {
+                    order: "desc"
+                });
+            }
+
             release();
         });
     };
@@ -2271,16 +2356,17 @@ var graphPara = {};
     });
 
     $.subscribe("/PivotViewer/ImageController/Collection/Loaded", function(event) {
-
         var facets = ["<div class='pv-filterpanel-accordion'>"];
         var longSearch = ["<div id='pv-long-search-box'><br><select id='pv-long-search-cat'>"];
         var sort = [],
             activeNumber = 0;
+        var isVisibleCounter = 0
         longSearch.push("<option value='globalSearch'>Search All Fields</option>");
         _longStringCategories.push(category);
         for (var i = 0; i < PivotCollection.categories.length; i++) {
             var category = PivotCollection.categories[i];
             if (category.isFilterVisible) {
+                isVisibleCounter++;
                 if (category.isLongString() || category.isPromoted()) {
                     longSearch.push("<option value='" + PV.cleanName(category.name.toLowerCase()) + "'>" + category.name + "</option>");
                     _longStringCategories.push(category);
@@ -2315,6 +2401,9 @@ var graphPara = {};
                     sort.push("<option value='" + i + "' search='" + PV.cleanName(category.name.toLowerCase()) + "'>" + category.name + "</option>");
                 }
             }
+        }
+        if(isVisibleCounter < 20){
+            $(".pv-filterpanel-search-box").css("display","none");
         }
         if (longSearch.length > 1) {
             longSearch.push("</div></select>");

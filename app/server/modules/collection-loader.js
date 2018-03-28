@@ -428,6 +428,7 @@ exports.getColumnsAndTags = function(user, name, callback){
 
           for(var i = 0; i < names.length; i++){
             if(names[i].indexOf('#') > -1){
+              console.log(names[i]);
               var tmp = {};
               tmp.values = [];
 
@@ -462,6 +463,10 @@ exports.getColumnsAndTags = function(user, name, callback){
               if(names[i].indexOf('#hidden') > -1){
                 tmp.values.push('#hidden');
                 names[i] = names[i].replace('#hidden', '');
+              }
+              if(names[i].indexOf('#sortquan') > -1){
+                tmp.values.push('#sortquan');
+                names[i] = names[i].replace('#sortquan', '');
               }
               if(names[i].indexOf('#multi') > -1){
                 tmp.values.push('#multi');
