@@ -1311,6 +1311,7 @@ red to yellow to green to blue
         this.createGeometries();
         this.refitBounds();
         this.getOverlay();
+
         this.createLegend();
     },
     createGeometries: function(){
@@ -1431,10 +1432,25 @@ red to yellow to green to blue
                 if (this.buckets[i].startRange == this.buckets[i].endRange)
                     tableContent += "<td><div style='overflow:hidden;white-space:nowrap;width:" + width + "px;text-overflow:ellipsis'>" + this.buckets[i].startLabel + "</div></td></tr>";
                 else tableContent += "<td><div style='overflow:hidden;white-space:nowrap;width:" + width + "px;text-overflow:ellipsis'>" + this.buckets[i].startLabel + " to " + this.buckets[i].endLabel + "</div></td></tr>";
+                
             }
+            tableContent += "<tr><td colspan='2'></hr> *Click items on the map to see details.</td></tr>"
         }
+        
         tableContent +="</table>";
+         // don't draw legend when one item is faceted - show the item instead
+        //alert(document.getElementById('pv-toolbarpanel-countbox').innerHTML);
+       
         $('.pv-altinfopanel').append(tableContent);
+        if (document.getElementById('pv-toolbarpanel-countbox').innerHTML == "1") {
+        
+            //document.getElementById('pv-altinfopanel').style.display='none';
+            setTimeout(function(){
+                //alert('going to do it')
+                $('.pv-altinfopanel').hide();
+            }, 300);
+
+        }
     }
 });
 //# sourceURL=mapview.js
