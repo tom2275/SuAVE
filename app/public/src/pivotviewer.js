@@ -1351,7 +1351,7 @@ var graphPara = {};
         _datetimeFilters = datetimeFilters;
         _selectedFilters = selectedFilters
 
-        if (_longstringFilters != null || _numericFilters.length != 0 || _stringFilters.length != 0 || _datetimeFilters.length != 0) {
+        if (_longstringFilters != null || _globalStringFilter != null || _numericFilters.length != 0 || _stringFilters.length != 0 || _datetimeFilters.length != 0) {
             $('.pv-filterpanel-clearall').css('visibility', 'visible');
         }
         else {
@@ -2440,6 +2440,7 @@ var graphPara = {};
                         for(var x=0;x<_stringCategories.length;x++){
                             var category = PivotCollection.getCategoryByName(_stringCategories[x]["name"])
                             if(!category.uiInit){
+                                console.log("initializing category " + category.name);
                                 PV.initUICategory(category);
                             }
                         }
