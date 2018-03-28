@@ -2440,7 +2440,6 @@ var graphPara = {};
                         for(var x=0;x<_stringCategories.length;x++){
                             var category = PivotCollection.getCategoryByName(_stringCategories[x]["name"])
                             if(!category.uiInit){
-                                console.log("initializing category " + category.name);
                                 PV.initUICategory(category);
                             }
                         }
@@ -4069,6 +4068,18 @@ var graphPara = {};
             })
         }
 
+        if($("#pv-long-search-cat option:selected").val() == "globalSearch"){
+            LoadSem.acquire(function(release) {
+                if ($('#pv-long-search').val() != null && $('#pv-long-search').val() != ""){
+                    _globalStringFilter = {
+                        value: $("#pv-long-search").val().toLowerCase()
+                    };
+                }
+                else _globalStringFilter = null;
+                PV.filterCollection();
+                release();
+            });
+        }
     };
 
     PV.dragCategorySlider = function(slider, min, max, doFilter) {
