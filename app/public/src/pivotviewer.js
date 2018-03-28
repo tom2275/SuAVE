@@ -1351,7 +1351,7 @@ var graphPara = {};
         _datetimeFilters = datetimeFilters;
         _selectedFilters = selectedFilters
 
-        if (_longstringFilters != null || _numericFilters.length != 0 || _stringFilters.length != 0 || _datetimeFilters.length != 0) {
+        if (_longstringFilters != null || _globalStringFilter != null || _numericFilters.length != 0 || _stringFilters.length != 0 || _datetimeFilters.length != 0) {
             $('.pv-filterpanel-clearall').css('visibility', 'visible');
         }
         else {
@@ -4068,6 +4068,18 @@ var graphPara = {};
             })
         }
 
+        if($("#pv-long-search-cat option:selected").val() == "globalSearch"){
+            LoadSem.acquire(function(release) {
+                if ($('#pv-long-search').val() != null && $('#pv-long-search').val() != ""){
+                    _globalStringFilter = {
+                        value: $("#pv-long-search").val().toLowerCase()
+                    };
+                }
+                else _globalStringFilter = null;
+                PV.filterCollection();
+                release();
+            });
+        }
     };
 
     PV.dragCategorySlider = function(slider, min, max, doFilter) {
