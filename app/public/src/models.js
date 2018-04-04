@@ -67,7 +67,7 @@ PivotViewer.Models.Collection = Object.subClass({
 
 //PivotViewer.Models
 PivotViewer.Models.Category = Object.subClass({
-    init: function (name, type, isFilterVisible,defaultSortQuan) {
+    init: function (name, type, isFilterVisible,defaultSortQuan,searchable) {
 		this.name = name;
 		this.type = type != null && type != undefined ? type : PivotViewer.Models.FacetType.String;
 		//#hiddenMore functionality
@@ -88,6 +88,7 @@ PivotViewer.Models.Category = Object.subClass({
 		this.datetimeBuckets = [];
 		this.customSort = null;
 		this.defaultSortQuan = defaultSortQuan;
+		this.searchable = searchable;
 		this.labels = [];
     this.isMultipleItems = false; /// this facet can have more than one value
     },
@@ -106,6 +107,7 @@ PivotViewer.Models.Category = Object.subClass({
 	isDateTime: function () { return this.type == PivotViewer.Models.FacetType.DateTime; },
 	isLink: function () { return this.type == PivotViewer.Models.FacetType.Link;},
 	isLocation: function () { return this.type == PivotViewer.Models.FacetType.Location;},
+	isSearchable: function () { return this.searchable;},
 });
 
 PivotViewer.Models.CategorySort = Object.subClass({

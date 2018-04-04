@@ -141,8 +141,9 @@ var sMemory = false;
 									'<option data-subtext="expects a well-formatted address that will be geocoded on the fly">#textlocation</option>'+
 									'<option data-subtext="will be shown as a short description for the row">#info</option>'+
 							  '</optgroup>'+
-							  '<optgroup label="Column Default Setting" data-max-options="1">'+
+							  '<optgroup label="Column Default Setting">'+
 								'<option data-subtext="will sort by quantity in the filter panel">#sortquan</option>'+
+								'<option data-subtext="will mark this field as searchable in keyword searching">#searchable</option>'+
 							  '</optgroup>'+
 							  '<optgroup label="Hidden in Filter Panel" data-max-options="1">'+
 								'<option data-subtext="won’t appear in the filter panel or in the sorting dropdown list">#hidden</option>'+
@@ -207,9 +208,10 @@ $(document).on('click', '#tag-item-select li', function(){
 					'<option data-subtext="URL to be invoked as user clicks on the title">#href</option>'+
 					'<option data-subtext="will be shown as a short description for the row">#info</option>'+
 				'</optgroup>'+
-				'<optgroup label="Column Default Setting" data-max-options="1">'+
-								'<option data-subtext="will sort by quantity in the filter panel">#sortquan</option>'+
-							  '</optgroup>'+
+				'<optgroup label="Column Default Setting">'+
+					'<option data-subtext="will sort by quantity in the filter panel">#sortquan</option>'+
+					'<option data-subtext="will mark this field as searchable in keyword searching">#searchable</option>'+
+				'</optgroup>'+
 				'<optgroup label="Hidden in Filter Panel" data-max-options="1">'+
 					'<option data-subtext="won’t appear in the filter panel or in the sorting dropdown list">#hidden</option>'+
 					'<option data-subtext="Same as hidden and the right info panel">#hiddenmore</option>'+
