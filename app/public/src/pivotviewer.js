@@ -58,7 +58,6 @@ var graphPara = {};
         _ordinalItemTotals = [],
         _longstringFilters = null,
         _longStringCategories = [];
-        _promotedCategories = [];
 
         _stringFilters = [],
         _numericFilters = [],
@@ -1658,7 +1657,6 @@ var graphPara = {};
                         nextE.keyCode = e.keyCode;
                         $('#pv-long-search').trigger(nextE);
                         $('#pv-value-search-clear-'+PV.cleanName(category.name)).click();
-                        category.promote();
                     }
                     // ----------------------------------------------------
 
@@ -2371,7 +2369,7 @@ var graphPara = {};
             var category = PivotCollection.categories[i];
             if (category.isFilterVisible) {
                 isVisibleCounter++;
-                if (category.isLongString() || category.isPromoted()) {
+                if (category.isLongString()) {
                     longSearch.push("<option value='" + PV.cleanName(category.name.toLowerCase()) + "'>" + category.name + "</option>");
                     _longStringCategories.push(category);
                 } else {
