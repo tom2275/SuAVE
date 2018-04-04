@@ -1506,6 +1506,10 @@ var graphPara = {};
 
     };
 
+    PV.justLoadCategory = function(category){
+        Loader.loadColumn(category);
+    }
+
     PV.initUICategory = function(category) {
         Loader.loadColumn(category);
         LoadSem.acquire(function(release) {
@@ -2432,15 +2436,12 @@ var graphPara = {};
                 // Global Search suggestion End
                 if (e.keyCode == 13) {
                     var category = PivotCollection.getCategoryByName([$("#pv-long-search-cat option:selected").text()]);
-                    // Need to load all string category to ui for recounting
-                    //TODO:
-                    // This can be improve by asking the prefixTree which category is the string located 
-                    // and just load those category
                     if (category == null && $("#pv-long-search-cat option:selected").val() == "globalSearch"){
                         for(var x=0;x<_stringCategories.length;x++){
                             var category = PivotCollection.getCategoryByName(_stringCategories[x]["name"])
                             if(!category.uiInit){
-                                PV.initUICategory(category);
+                                //load the cateogory only as ui init take so much time
+                                PV.justLoadCategory(category);
                             }
                         }
                         // Global Search start here
