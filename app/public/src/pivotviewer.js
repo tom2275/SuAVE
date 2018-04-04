@@ -2443,21 +2443,12 @@ var graphPara = {};
                                 PV.justLoadCategory(category);
                             }
                         }
-                        var _usingSearchable = false;
-                        if(PivotCollection.useSearchable){
-                            _usingSearchable = true;
-                        }
-                        /*
-                        if($("#pv-long-search-cat option:selected").val() == "searchInSearchable"){
-                            _usingSearchable = true;
-                        } 
-                        */  
                         // Global Search start here
                         LoadSem.acquire(function(release) {
                             if ($('#pv-long-search').val() != null && $('#pv-long-search').val() != ""){
                                 _globalStringFilter = {
                                     value: $("#pv-long-search").val().toLowerCase(),
-                                    usingSearchable: _usingSearchable 
+                                    usingSearchable: PivotCollection.useSearchable
                                 };
                             }
                             else _globalStringFilter = null;
@@ -4079,19 +4070,11 @@ var graphPara = {};
         }
 
         if($("#pv-long-search-cat option:selected").val() == "globalSearch"){
-            var _usingSearchable = false;
-            if(PivotCollection.useSearchable){
-                _usingSearchable = true;
-            }
-            /*
-            if($("#pv-long-search-cat option:selected").val() == "searchInSearchable"){
-                _usingSearchable = true;
-            }*/
             LoadSem.acquire(function(release) {
                 if ($('#pv-long-search').val() != null && $('#pv-long-search').val() != ""){
                     _globalStringFilter = {
                         value: $("#pv-long-search").val().toLowerCase(),
-                        usingSearchable: _usingSearchable
+                        usingSearchable: PivotCollection.useSearchable
                     };
                 }
                 else _globalStringFilter = null;
