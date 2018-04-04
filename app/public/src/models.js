@@ -25,7 +25,8 @@ PivotViewer.Models.Collection = Object.subClass({
         this.maxRelatedLinks = 0;
 
         this._categoriesByName = [];
-        this._itemsById = [];
+		this._itemsById = [];
+		this.useSearchable = false;
 
         var that = this;
         var _catIndex = 0;
@@ -43,7 +44,10 @@ PivotViewer.Models.Collection = Object.subClass({
 				}
 			}
 			//--------------------------
-            //x.visIndex = x.isFilterVisible ? _visIndex++ : -1;
+			//x.visIndex = x.isFilterVisible ? _visIndex++ : -1;
+			if(x.searchable){
+				that.useSearchable = true;
+			}
             this.__proto__.push.apply(that.categories, [x]);
             that._categoriesByName[x.name] = x;
             that._categoriesByName[x.name.toLowerCase()] = x;

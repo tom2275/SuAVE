@@ -2359,8 +2359,7 @@ var graphPara = {};
                 var category = PivotCollection.categories[event.visibleCategories[i]];
                 if (!category.isFilterVisible) continue;
                 if (category.isLongString()){
-                    longSearchSelect.append("<option value='globalSearch'>Search All Fields</option>");
-                    longSearchSelect.append("<option value='searchInSearchable'>Search in Searchable</option>");
+                    longSearchSelect.append("<option value='globalSearch'>Search keyword</option>");
                     longSearchSelect.append("<option value='" + PV.cleanName(category.name) + "'>" + category.name + "</option>");
                     _longStringCategories.push(category);
                 } else {
@@ -2390,8 +2389,7 @@ var graphPara = {};
         var sort = [],
             activeNumber = 0;
         var isVisibleCounter = 0
-        longSearch.push("<option value='globalSearch'>Search All Fields</option>");
-        longSearch.push("<option value='searchInSearchable'>Search in Searchable</option>");
+        longSearch.push("<option value='globalSearch'>Search keyword</option>");
         _longStringCategories.push(category);
         for (var i = 0; i < PivotCollection.categories.length; i++) {
             var category = PivotCollection.categories[i];
@@ -2437,7 +2435,7 @@ var graphPara = {};
                 // Global Search suggestion End
                 if (e.keyCode == 13) {
                     var category = PivotCollection.getCategoryByName([$("#pv-long-search-cat option:selected").text()]);
-                    if (category == null && ($("#pv-long-search-cat option:selected").val() == "globalSearch" || $("#pv-long-search-cat option:selected").val() == "searchInSearchable")){
+                    if (category == null && $("#pv-long-search-cat option:selected").val() == "globalSearch"){
                         for(var x=0;x<_stringCategories.length;x++){
                             var category = PivotCollection.getCategoryByName(_stringCategories[x]["name"])
                             if(!category.uiInit){
@@ -2446,9 +2444,14 @@ var graphPara = {};
                             }
                         }
                         var _usingSearchable = false;
+                        if(PivotCollection.useSearchable){
+                            _usingSearchable = true;
+                        }
+                        /*
                         if($("#pv-long-search-cat option:selected").val() == "searchInSearchable"){
                             _usingSearchable = true;
-                        }   
+                        } 
+                        */  
                         // Global Search start here
                         LoadSem.acquire(function(release) {
                             if ($('#pv-long-search').val() != null && $('#pv-long-search').val() != ""){
@@ -2498,8 +2501,7 @@ var graphPara = {};
                 if ($(this).attr("dirty") == 1) {
                     $("#pv-long-search-cat option").remove();
                     var search = $('.pv-filterpanel-search').val();
-                    $("#pv-long-search-cat").append("<option value='globalSearch'>Search All Fields</option>");
-                    $("#pv-long-search-cat").append("<option value='searchInSearchable'>Search in Searchable</option>");
+                    $("#pv-long-search-cat").append("<option value='globalSearch'>Search keyword</option>");
                     for (var i = 1; i < _longStringCategories.length; i++) {
                         var category = _longStringCategories[i];
                             clean = PV.cleanName(category.name);
@@ -4076,11 +4078,15 @@ var graphPara = {};
             })
         }
 
-        if($("#pv-long-search-cat option:selected").val() == "globalSearch" || $("#pv-long-search-cat option:selected").val() == "searchInSearchable"){
+        if($("#pv-long-search-cat option:selected").val() == "globalSearch"){
             var _usingSearchable = false;
-            if($("#pv-long-search-cat option:selected").val() == "searchInSearchable"){
+            if(PivotCollection.useSearchable){
                 _usingSearchable = true;
             }
+            /*
+            if($("#pv-long-search-cat option:selected").val() == "searchInSearchable"){
+                _usingSearchable = true;
+            }*/
             LoadSem.acquire(function(release) {
                 if ($('#pv-long-search').val() != null && $('#pv-long-search').val() != ""){
                     _globalStringFilter = {

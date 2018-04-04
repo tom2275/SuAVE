@@ -135,7 +135,6 @@ PivotViewer.Models.Loaders.CSVLoader = PivotViewer.Models.Loaders.ICollectionLoa
                     type = PivotViewer.Models.FacetType.Ordinal;
                 else if (categories[i].indexOf("#long", index) !== -1) {
                     type = PivotViewer.Models.FacetType.LongString;
-                    isSearchable = true;
                     this.myStringCat.push(i);
                 } else if (categories[i].indexOf("#link", index) !== -1) {
                     type = PivotViewer.Models.FacetType.Link;
