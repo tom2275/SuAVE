@@ -80,6 +80,11 @@
                 if(query.views[3] == 1) options.Views.push("qca");
                 if(query.views[4] == 1) options.Views.push("map");
                 if(query.views[5] == 1) options.Views.push("r");
+                if(query.views.length >  6){
+			        if(query.views[6] == 1) {
+                        options.Views.push("table");
+                    }
+		        }
             }
         }
 

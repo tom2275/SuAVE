@@ -2562,10 +2562,7 @@ var graphPara = {};
             eval("var view = new PivotViewer.Views." + viewName.charAt(0).toUpperCase() + viewName.substring(1) + "View()");
             view.setOptions(_options);
             _views.push(view);
-
         }
-
-
         viewPanel.append("<div class='pv-viewpanel-view'></div>");
         for (var i = 0; i < _views.length; i++) {
             if (_views[i] instanceof PivotViewer.Views.IPivotViewerView) {
