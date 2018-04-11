@@ -125,6 +125,7 @@ PivotViewer.Models.Loaders.CSVLoader = PivotViewer.Models.Loaders.ICollectionLoa
             var isMultipleItems = false;
             var index, type, visible = true;
             var defaultSortQuan = false;
+            var isSearchable = false;
             if ((index = categories[i].indexOf("#")) !== -1) {
                 if (categories[i].indexOf("#number", index) !== -1)
                     type = PivotViewer.Models.FacetType.Number;
@@ -169,12 +170,15 @@ PivotViewer.Models.Loaders.CSVLoader = PivotViewer.Models.Loaders.ICollectionLoa
                 if (categories[i].indexOf("#sortquan") !== -1){
                     defaultSortQuan = true;
                 } 
+                if (categories[i].indexOf("#searchable") !== -1){
+                    isSearchable = true;
+                }
             } else {
                 type = PivotViewer.Models.FacetType.String;
                 index = categories[i].length;
                 this.myStringCat.push(i);
             }
-            var category = new PivotViewer.Models.Category(categories[i].substring(0, index), type, visible,defaultSortQuan);
+            var category = new PivotViewer.Models.Category(categories[i].substring(0, index), type, visible,defaultSortQuan,isSearchable);
             category.column = i;
             category.isMultipleItems = isMultipleItems;
             this.collection.categories.push(category);

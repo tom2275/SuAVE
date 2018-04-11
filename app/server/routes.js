@@ -462,7 +462,6 @@ module.exports = function(app) {
 		})
 	});
 
-
 	app.get('/getViewOptionsByName', function(req, res) {
 		SM.getViewOptionsByName(req.query.file, req.query.user, function(e, o){
 			if(e) {

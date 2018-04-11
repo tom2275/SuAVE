@@ -199,6 +199,10 @@ exports.setImgProperty = function(data, collection, callback){
     //var valCol = collection['column'];
     var shapeCol = collection['sColumn'];
     var colorCol = collection['cColumn'];
+
+    if(shapeCol === undefined) shapeCol = '|^';
+    if(colorCol === undefined) colorCol = '|^';
+
     var color;
     var shape;
 
@@ -466,6 +470,10 @@ exports.getColumnsAndTags = function(user, name, callback){
               if(names[i].indexOf('#sortquan') > -1){
                 tmp.values.push('#sortquan');
                 names[i] = names[i].replace('#sortquan', '');
+              }
+              if(names[i].indexOf('#searchable') > -1){
+                tmp.values.push('#searchable');
+                names[i] = names[i].replace('#searchable', '');
               }
               if(names[i].indexOf('#multi') > -1){
                 tmp.values.push('#multi');

@@ -25,7 +25,8 @@ PivotViewer.Models.Collection = Object.subClass({
         this.maxRelatedLinks = 0;
 
         this._categoriesByName = [];
-        this._itemsById = [];
+		this._itemsById = [];
+		this.useSearchable = false;
 
         var that = this;
         var _catIndex = 0;
@@ -43,7 +44,10 @@ PivotViewer.Models.Collection = Object.subClass({
 				}
 			}
 			//--------------------------
-            //x.visIndex = x.isFilterVisible ? _visIndex++ : -1;
+			//x.visIndex = x.isFilterVisible ? _visIndex++ : -1;
+			if(x.searchable){
+				that.useSearchable = true;
+			}
             this.__proto__.push.apply(that.categories, [x]);
             that._categoriesByName[x.name] = x;
             that._categoriesByName[x.name.toLowerCase()] = x;
@@ -67,11 +71,9 @@ PivotViewer.Models.Collection = Object.subClass({
 
 //PivotViewer.Models
 PivotViewer.Models.Category = Object.subClass({
-    init: function (name, type, isFilterVisible,defaultSortQuan) {
+    init: function (name, type, isFilterVisible,defaultSortQuan,searchable) {
 		this.name = name;
 		this.type = type != null && type != undefined ? type : PivotViewer.Models.FacetType.String;
-		//ENTER select all feature
-		this.promoted = false;
 		//#hiddenMore functionality
 		if(isFilterVisible != null && isFilterVisible != undefined){
 			if(typeof isFilterVisible === 'boolean'){
@@ -90,6 +92,7 @@ PivotViewer.Models.Category = Object.subClass({
 		this.datetimeBuckets = [];
 		this.customSort = null;
 		this.defaultSortQuan = defaultSortQuan;
+		this.searchable = searchable;
 		this.labels = [];
     this.isMultipleItems = false; /// this facet can have more than one value
     },
@@ -108,8 +111,7 @@ PivotViewer.Models.Category = Object.subClass({
 	isDateTime: function () { return this.type == PivotViewer.Models.FacetType.DateTime; },
 	isLink: function () { return this.type == PivotViewer.Models.FacetType.Link;},
 	isLocation: function () { return this.type == PivotViewer.Models.FacetType.Location;},
-	promote: function() { this.promoted = true; },
-	isPromoted: function() { return this.promoted; }
+	isSearchable: function () { return this.searchable;},
 });
 
 PivotViewer.Models.CategorySort = Object.subClass({

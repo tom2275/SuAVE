@@ -141,8 +141,9 @@ var sMemory = false;
 									'<option data-subtext="expects a well-formatted address that will be geocoded on the fly">#textlocation</option>'+
 									'<option data-subtext="will be shown as a short description for the row">#info</option>'+
 							  '</optgroup>'+
-							  '<optgroup label="Column Default Setting" data-max-options="1">'+
+							  '<optgroup label="Column Default Setting">'+
 								'<option data-subtext="will sort by quantity in the filter panel">#sortquan</option>'+
+								'<option data-subtext="will mark this field as searchable in keyword searching">#searchable</option>'+
 							  '</optgroup>'+
 							  '<optgroup label="Hidden in Filter Panel" data-max-options="1">'+
 								'<option data-subtext="won’t appear in the filter panel or in the sorting dropdown list">#hidden</option>'+
@@ -207,9 +208,10 @@ $(document).on('click', '#tag-item-select li', function(){
 					'<option data-subtext="URL to be invoked as user clicks on the title">#href</option>'+
 					'<option data-subtext="will be shown as a short description for the row">#info</option>'+
 				'</optgroup>'+
-				'<optgroup label="Column Default Setting" data-max-options="1">'+
-								'<option data-subtext="will sort by quantity in the filter panel">#sortquan</option>'+
-							  '</optgroup>'+
+				'<optgroup label="Column Default Setting">'+
+					'<option data-subtext="will sort by quantity in the filter panel">#sortquan</option>'+
+					'<option data-subtext="will mark this field as searchable in keyword searching">#searchable</option>'+
+				'</optgroup>'+
 				'<optgroup label="Hidden in Filter Panel" data-max-options="1">'+
 					'<option data-subtext="won’t appear in the filter panel or in the sorting dropdown list">#hidden</option>'+
 					'<option data-subtext="Same as hidden and the right info panel">#hiddenmore</option>'+
@@ -403,15 +405,21 @@ $(document).on('click', '#select-tags-submit',  function(){
 			'<div class="col-xs-4"> <input id="pv-map" class="checkbox-custom" type="checkbox">'+
 			'<label for="pv-map" class="checkbox-custom-label">Map</label> </div>'+
 			'<div class="col-xs-4"><input id="pv-r" class="checkbox-custom" type="checkbox">'+
-			'<label for="pv-r" class="checkbox-custom-label">R</label></div></div>'
+			'<label for="pv-r" class="checkbox-custom-label">R</label></div></div><div class="row">'+
+			'<div class="col-xs-4"><input id="pv-table" class="checkbox-custom" type="checkbox">'+
+			'<label for="pv-table" class="checkbox-custom-label">Table</label></div></div>'
 		);
 		var views = survey.views.toString();
+		console.log(views);
 		if(views[0] == '1') $("#pv-grid").prop("checked", true);
-    if(views[1] == '1') $("#pv-bucket").prop("checked", true);
-    if(views[2] == '1') $("#pv-crosstab").prop("checked", true);
-    if(views[3] == '1') $("#pv-qca").prop("checked", true);
-    if(views[4] == '1') $("#pv-map").prop("checked", true);
+    	if(views[1] == '1') $("#pv-bucket").prop("checked", true);
+    	if(views[2] == '1') $("#pv-crosstab").prop("checked", true);
+    	if(views[3] == '1') $("#pv-qca").prop("checked", true);
+    	if(views[4] == '1') $("#pv-map").prop("checked", true);
 		if(views[5] == '1') $("#pv-r").prop("checked", true);
+		if(views.length >  6){
+			if(views[6] == '1') $("#pv-table").prop("checked", true);
+		}
 
 		if(!survey.dzc){
 			$('#column-select-1').empty();
@@ -600,6 +608,11 @@ $(document).on('click', '#select-tags-submit',  function(){
 			views += 0;
 		}
 		if($("#pv-r").is(':checked')){
+			views += 1;
+		}else{
+			views += 0;
+		}
+		if($("#pv-table").is(':checked')){
 			views += 1;
 		}else{
 			views += 0;

@@ -58,7 +58,6 @@ var graphPara = {};
         _ordinalItemTotals = [],
         _longstringFilters = null,
         _longStringCategories = [];
-        _promotedCategories = [];
 
         _stringFilters = [],
         _numericFilters = [],
@@ -959,16 +958,25 @@ var graphPara = {};
 
             // Global search --------------------------------------------------------------------
             if (_globalStringFilter != null) {
+                console.log(_globalStringFilter);
                 var count = 0;
                 globalStringFiltered = [];
                 for (var i = 0, _iLen = _tiles.length; i < _iLen; i++) {
                     globalStringFiltered.push(false)
                 }
                 _stringCategories = []
-                for (var i = 0; i < PivotCollection.categories.length; i++) {
-                    if((PivotCollection.categories[i].type == "LongString" || PivotCollection.categories[i].type == "String") && PivotCollection.categories[i].isFilterVisible){
-                        _stringCategories.push(PivotCollection.categories[i]);
-                    }        
+                if(_globalStringFilter.usingSearchable){
+                    for (var i = 0; i < PivotCollection.categories.length; i++) {
+                        if((PivotCollection.categories[i].searchable) && PivotCollection.categories[i].isFilterVisible){
+                            _stringCategories.push(PivotCollection.categories[i]);
+                        }        
+                    }
+                }else{
+                    for (var i = 0; i < PivotCollection.categories.length; i++) {
+                        if((PivotCollection.categories[i].type == "LongString" || PivotCollection.categories[i].type == "String") && PivotCollection.categories[i].isFilterVisible){
+                            _stringCategories.push(PivotCollection.categories[i]);
+                        }        
+                    }
                 }
                 for (var i = 0, _iLen = _tiles.length; i < _iLen; i++) {
                     for (var j = 0, _jLen = _stringCategories.length; j < _jLen; j++){
@@ -1181,6 +1189,12 @@ var graphPara = {};
                 _stringCategories.push(PivotCollection.categories[i]);
             }        
         }
+        _searchCategories = []
+        for (var i = 0; i < PivotCollection.categories.length; i++) {
+            if(PivotCollection.categories[i].searchable && PivotCollection.categories[i].isFilterVisible){
+                _searchCategories.push(PivotCollection.categories[i]);
+            }        
+        }
 
         //Find matching facet values in items
         for (var i = 0, _iLen = _tiles.length; i < _iLen; i++) {
@@ -1266,13 +1280,24 @@ var graphPara = {};
                     continue;
                 }
             } else if (_globalStringFilter != null) { //expand = true
-                for (var j = 0, _jLen = _stringCategories.length; j < _jLen; j++){
-                    var facet = _tiles[i].item.getFacetByName(_stringCategories[j]["name"]);
-                    if (facet == undefined || facet.values[0].value.toLowerCase().indexOf(_globalStringFilter.value) < 0) {
-                        tile.filtered = false;
-                        continue;
+                if(!_globalStringFilter.usingSearchable){
+                    for (var j = 0, _jLen = _stringCategories.length; j < _jLen; j++){
+                        var facet = _tiles[i].item.getFacetByName(_stringCategories[j]["name"]);
+                        if (facet == undefined || facet.values[0].value.toLowerCase().indexOf(_globalStringFilter.value) < 0) {
+                            tile.filtered = false;
+                            continue;
+                        }
+                    }
+                }else{
+                    for (var j = 0, _jLen = _searchCategories.length; j < _jLen; j++){
+                        var facet = _tiles[i].item.getFacetByName(_searchCategories[j]["name"]);
+                        if (facet == undefined || facet.values[0].value.toLowerCase().indexOf(_globalStringFilter.value) < 0) {
+                            tile.filtered = false;
+                            continue;
+                        }
                     }
                 }
+                
             }
             //----------------------------------------------------------------------------------
 
@@ -1506,6 +1531,10 @@ var graphPara = {};
 
     };
 
+    PV.justLoadCategory = function(category){
+        Loader.loadColumn(category);
+    }
+
     PV.initUICategory = function(category) {
         Loader.loadColumn(category);
         LoadSem.acquire(function(release) {
@@ -1654,7 +1683,6 @@ var graphPara = {};
                         nextE.keyCode = e.keyCode;
                         $('#pv-long-search').trigger(nextE);
                         $('#pv-value-search-clear-'+PV.cleanName(category.name)).click();
-                        category.promote();
                     }
                     // ----------------------------------------------------
 
@@ -2331,7 +2359,7 @@ var graphPara = {};
                 var category = PivotCollection.categories[event.visibleCategories[i]];
                 if (!category.isFilterVisible) continue;
                 if (category.isLongString()){
-                    longSearchSelect.append("<option value='globalSearch'>Search All Fields</option>");
+                    longSearchSelect.append("<option value='globalSearch'>Search keyword</option>");
                     longSearchSelect.append("<option value='" + PV.cleanName(category.name) + "'>" + category.name + "</option>");
                     _longStringCategories.push(category);
                 } else {
@@ -2361,43 +2389,18 @@ var graphPara = {};
         var sort = [],
             activeNumber = 0;
         var isVisibleCounter = 0
-        longSearch.push("<option value='globalSearch'>Search All Fields</option>");
+        longSearch.push("<option value='globalSearch'>Search keyword</option>");
         _longStringCategories.push(category);
         for (var i = 0; i < PivotCollection.categories.length; i++) {
             var category = PivotCollection.categories[i];
             if (category.isFilterVisible) {
                 isVisibleCounter++;
-                if (category.isLongString() || category.isPromoted()) {
+                if (category.isLongString()) {
                     longSearch.push("<option value='" + PV.cleanName(category.name.toLowerCase()) + "'>" + category.name + "</option>");
                     _longStringCategories.push(category);
                 } else {
                     activeNumber++;
-
                     facets.push("<h3 class='pv-facet' style='display:inherit' facet='" + PV.cleanName(category.name.toLowerCase()) + "'><a href='#' title='" + category.name + "'>" + category.name + "</a><div class='pv-filterpanel-accordion-heading-clear' facetType='" + category.type + "'>&nbsp;</div></h3><div style='display:'inherit' style='height:30%' id='pv-cat-" + PV.cleanName(category.name) + "'></div>");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     sort.push("<option value='" + i + "' search='" + PV.cleanName(category.name.toLowerCase()) + "'>" + category.name + "</option>");
                 }
             }
@@ -2432,22 +2435,20 @@ var graphPara = {};
                 // Global Search suggestion End
                 if (e.keyCode == 13) {
                     var category = PivotCollection.getCategoryByName([$("#pv-long-search-cat option:selected").text()]);
-                    // Need to load all string category to ui for recounting
-                    //TODO:
-                    // This can be improve by asking the prefixTree which category is the string located 
-                    // and just load those category
                     if (category == null && $("#pv-long-search-cat option:selected").val() == "globalSearch"){
                         for(var x=0;x<_stringCategories.length;x++){
                             var category = PivotCollection.getCategoryByName(_stringCategories[x]["name"])
                             if(!category.uiInit){
-                                PV.initUICategory(category);
+                                //load the cateogory only as ui init take so much time
+                                PV.justLoadCategory(category);
                             }
                         }
                         // Global Search start here
                         LoadSem.acquire(function(release) {
                             if ($('#pv-long-search').val() != null && $('#pv-long-search').val() != ""){
                                 _globalStringFilter = {
-                                    value: $("#pv-long-search").val().toLowerCase()
+                                    value: $("#pv-long-search").val().toLowerCase(),
+                                    usingSearchable: PivotCollection.useSearchable
                                 };
                             }
                             else _globalStringFilter = null;
@@ -2491,7 +2492,7 @@ var graphPara = {};
                 if ($(this).attr("dirty") == 1) {
                     $("#pv-long-search-cat option").remove();
                     var search = $('.pv-filterpanel-search').val();
-                    $("#pv-long-search-cat").append("<option value='globalSearch'>Search All Fields</option>");
+                    $("#pv-long-search-cat").append("<option value='globalSearch'>Search keyword</option>");
                     for (var i = 1; i < _longStringCategories.length; i++) {
                         var category = _longStringCategories[i];
                             clean = PV.cleanName(category.name);
@@ -2561,10 +2562,7 @@ var graphPara = {};
             eval("var view = new PivotViewer.Views." + viewName.charAt(0).toUpperCase() + viewName.substring(1) + "View()");
             view.setOptions(_options);
             _views.push(view);
-
         }
-
-
         viewPanel.append("<div class='pv-viewpanel-view'></div>");
         for (var i = 0; i < _views.length; i++) {
             if (_views[i] instanceof PivotViewer.Views.IPivotViewerView) {
@@ -4072,7 +4070,8 @@ var graphPara = {};
             LoadSem.acquire(function(release) {
                 if ($('#pv-long-search').val() != null && $('#pv-long-search').val() != ""){
                     _globalStringFilter = {
-                        value: $("#pv-long-search").val().toLowerCase()
+                        value: $("#pv-long-search").val().toLowerCase(),
+                        usingSearchable: PivotCollection.useSearchable
                     };
                 }
                 else _globalStringFilter = null;

@@ -20,7 +20,6 @@
 PivotViewer.Views.TableView = PivotViewer.Views.IPivotViewerView.subClass({
     init: function () {
         this._super();
-        this.filter = null;
         this.selectedFacet = null;
         this.sortKey = 'pv-key';
         this.sortReverse = false;
@@ -28,7 +27,7 @@ PivotViewer.Views.TableView = PivotViewer.Views.IPivotViewerView.subClass({
         this.sortReverseAttribute = false;
         this.sortReverseValue = false;
     },
-    Setup: function (width, height, offsetX, offsetY, tileMaxRatio) {
+    setup: function (width, height, offsetX, offsetY, tileMaxRatio) {
         this.width = width;
         this.height = height;
         this.offsetX = offsetX;
@@ -45,8 +44,7 @@ PivotViewer.Views.TableView = PivotViewer.Views.IPivotViewerView.subClass({
     },
     Filter: function (tiles, filter) {
         this.tiles = tiles;
-        this.filter = filter;
-
+        this.filterList = filter;
         this.sortReverse = false;
         this.sortReverseEntity = false;
         this.sortReverseAttribute = false;
@@ -56,37 +54,36 @@ PivotViewer.Views.TableView = PivotViewer.Views.IPivotViewerView.subClass({
 
         this.filtered = false;
     },
-    Activate: function () {
+    activate: function () {
         if (!Modernizr.canvas) return;
 
         this._super();
-
-        Debug.Log('Table View Filtered: ' + this.filterEvt.filter.length);
 
         $('.pv-toolbarpanel-sort').fadeIn();
         $('.pv-toolbarpanel-zoomcontrols').css('border-width', '0');
         $('#MAIN_BODY').css('overflow', 'auto');
         $('.pv-tableview-table').fadeIn();
 
-        if (this.filtered) this.Filter(this.filterEvt.tiles, this.filterEvt.filter);
+        if (!this.filtered) this.Filter(this.tiles, this.filterList);
     },
-    Deactivate: function() {
+    deactivate: function() {
         this._super();
         $('.pv-tableview-table').fadeOut();
         $('.pv-toolbarpanel-sort').fadeOut();
     },
-    GetButtonImage: function () {return 'images/TableView.png';},
-    GetButtonImageSelected: function () {return 'images/TableViewSelected.png';},
-    GetViewName: function () {return 'Table View';},
+    getButtonImage: function () {return 'images/TableView.png';},
+    getButtonImageSelected: function () {return 'images/TableViewSelected.png';},
+    getViewName: function () {return 'Table View';},
     CellClick: function (columnId, cells) {
-        Debug.Log('CellClick');
         if (columnId == 'pv-key') {
             var itemId = cells[0].attributes.getNamedItem("itemid").value;
-            if (this.selected == null || itemId != this.selected.facetItem.Id) {
-                var tile = TileController.GetTileById(itemId);
+            //if (this.selected == null || itemId != this.selected.facetItem.Id) {
+                if (this.selected == null || itemId != this.selected.item.Id) {
+                var tile = TileController.getTileById(itemId);
                 $.publish("/PivotViewer/Views/Item/Selected", [{ item: tile, bkt: 0 }]);
             }
-            else if (itemId == this.selected.facetItem.Id)
+            //else if (itemId == this.selected.facetItem.Id)
+            else if (itemId == this.selected.item.Id)
                 $.publish("/PivotViewer/Views/Item/Selected", [{ item: null, bkt: 0 }]);
         }
         else if (columnId == 'pv-facet') {
@@ -139,20 +136,29 @@ PivotViewer.Views.TableView = PivotViewer.Views.IPivotViewerView.subClass({
             tableContent += " <img style='position:relative;top:" + offset + "' src='" + sortImage + "'></img>";
         tableContent += "</th></tr>";
 
+        console.log(filter);
         for (var i = 0; i < filter.length; i++) {
-            var entity = filter[i].facetItem.Name, id = filter[i].facetItem.Id;
+            //var entity = filter[i].facetItem.Name, id = filter[i].facetItem.Id;
+            var entity = filter[i].item.name, id = filter[i].item.id;
             if (showAllFacets || selectedFacet == 'Description') {
                 var sortKeyValue;
                 if (sortKey == 'pv-key') sortKeyValue = entity;
                 else if (sortKey == 'pv-facet') sortKeyValue = 'Description';
-                else if (sortKey == 'pv-value') sortKeyValue = filter[i].facetItem.Description;
+                //else if (sortKey == 'pv-value') sortKeyValue = filter[i].facetItem.Description;
+                else if (sortKey == 'pv-value') sortKeyValue = filter[i].item.description;
 
                 // Only add a row for the Description if there is one
-                if (filter[i].facetItem.Description) {
+                //if (filter[i].facetItem.Description) {
+                if (filter[i].item.description) {
                     // Link out image if item has href
-                    if (filter[i].facetItem.Href) 
-                        tableRows.push({key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven +"'><td id='pv-key' itemid='" + id + "' title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].facetItem.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' title='Follow the link' src='images/goout.gif'></img></a></a></td><td id='pv-facet' title='Show only this predicate' style='color:#009933;cursor:pointer'>Description</td><td id='pv-value'>" + filter[i].facetItem.Description + "</td></tr>"});
-                    else tableRows.push({key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven +"'><td id='pv-key' itemid='" + id + "' class='tooltip' title='Toggle item selection'>" + entity + "</td><td id='pv-facet' title='Show only this predicate' style='color:#009933;cursor:pointer'>Description</td><td id='pv-value'>" + filter[i].facetItem.Description + "</td></tr>"});         
+                    //if (filter[i].facetItem.Href) 
+                    if (filter[i].item.Href) {
+                        //tableRows.push({key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven +"'><td id='pv-key' itemid='" + id + "' title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].facetItem.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' title='Follow the link' src='images/goout.gif'></img></a></a></td><td id='pv-facet' title='Show only this predicate' style='color:#009933;cursor:pointer'>Description</td><td id='pv-value'>" + filter[i].facetItem.Description + "</td></tr>"});
+                        tableRows.push({key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven +"'><td id='pv-key' itemid='" + id + "' title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].item.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' title='Follow the link' src='images/goout.gif'></img></a></a></td><td id='pv-facet' title='Show only this predicate' style='color:#009933;cursor:pointer'>Description</td><td id='pv-value'>" + filter[i].item.description + "</td></tr>"});
+                    }else{
+                        //tableRows.push({key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven +"'><td id='pv-key' itemid='" + id + "' class='tooltip' title='Toggle item selection'>" + entity + "</td><td id='pv-facet' title='Show only this predicate' style='color:#009933;cursor:pointer'>Description</td><td id='pv-value'>" + filter[i].facetItem.Description + "</td></tr>"});         
+                        tableRows.push({key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven +"'><td id='pv-key' itemid='" + id + "' class='tooltip' title='Toggle item selection'>" + entity + "</td><td id='pv-facet' title='Show only this predicate' style='color:#009933;cursor:pointer'>Description</td><td id='pv-value'>" + filter[i].item.description + "</td></tr>"});  
+                    }
                     oddOrEven = 'even-row';
                 }
 
@@ -160,11 +166,15 @@ PivotViewer.Views.TableView = PivotViewer.Views.IPivotViewerView.subClass({
                 else oddOrEven = 'odd-row';
 
                 if (showAllFacets) {
-                    for (var k = 0; k < filter[i].facetItem.Facets.length; k++){
-                        var facet = filter[i].facetItem.Facets[k], attribute = facet.Name;
-                        for (var l = 0; l < facet.FacetValues.length; l++) {
-                            var value = facet.FacetValues[l].Value;
-                            var label = facet.FacetValues[l].Label;
+                    //for (var k = 0; k < filter[i].facetItem.Facets.length; k++){
+                    for (var k = 0; k < filter[i].item.facets.length; k++){
+                        //var facet = filter[i].facetItem.Facets[k], attribute = facet.Name;
+                        var facet = filter[i].item.facets[k];
+                        var attribute = facet.name;
+                        //for (var l = 0; l < facet.FacetValues.length; l++) {
+                        for (var l = 0; l < facet.values.length; l++) {
+                            var value = facet.values[l].value;
+                            var label = facet.values[l].label;
                             
                             var sortKeyValue;
                             if (sortKey == 'pv-key') sortKeyValue = entity;
@@ -172,13 +182,15 @@ PivotViewer.Views.TableView = PivotViewer.Views.IPivotViewerView.subClass({
                             else if (sortKey == 'pv-value') sortKeyValue = value;
 
                             // Colour blue if in the filter
-                            if (PivotCollection.GetFacetCategoryByName(attribute).IsFilterVisible) {
+                            //if (PivotCollection.GetFacetCategoryByName(attribute).IsFilterVisible) {
+                            if (PivotCollection.getCategoryByName(attribute).IsFilterVisible) {
                                 // Link out image if item has href
-                                if (filter[i].facetItem.Href) {
+                                //if (filter[i].facetItem.Href) {
+                                if (filter[i].item.Href) {
                                     // Value is uri
                                     if (this.IsUri(value))
-                                        tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].facetItem.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet'  title='Show only this predicate' style='color:#009933;cursor:pointer'>" + attribute + "</td><td id='pv-value' value='" + value + "' title='Filter on this value' style='color:#009933;cursor:pointer'>" + label + " " + "<a href=" + value + " target=\"_blank\"><img style='cursor:default;' id=pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td></tr>" });
-                                    else tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].facetItem.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet'  title='Show only this predicate' style='color:#009933;cursor:pointer'>" + attribute + "</td><td id='pv-value' value='" + value + "' title='Filter on this value' style='color:#009933;cursor:pointer'>" + label + "</td></tr>" });
+                                        tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].item.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet'  title='Show only this predicate' style='color:#009933;cursor:pointer'>" + attribute + "</td><td id='pv-value' value='" + value + "' title='Filter on this value' style='color:#009933;cursor:pointer'>" + label + " " + "<a href=" + value + " target=\"_blank\"><img style='cursor:default;' id=pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td></tr>" });
+                                    else tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].item.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet'  title='Show only this predicate' style='color:#009933;cursor:pointer'>" + attribute + "</td><td id='pv-value' value='" + value + "' title='Filter on this value' style='color:#009933;cursor:pointer'>" + label + "</td></tr>" });
                                 } 
                                 else {
                                     // Value is uri
@@ -189,11 +201,12 @@ PivotViewer.Views.TableView = PivotViewer.Views.IPivotViewerView.subClass({
                             } 
                             else {
                                 // Link out image if item has href
-                                if (filter[i].facetItem.Href) { 
+                                //if (filter[i].facetItem.Href) {
+                                if (filter[i].item.Href) { 
                                     // Value is uri
                                     if (this.IsUri(value))
-                                        tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].facetItem.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet' title='Show only this predicate' style='color:#009933;cursor:pointer'>" + attribute + "</td><td id='pv-value' value='" + value + "'><a href='" + value + "' target='_blank'>" + label + "</a></td></tr>" });
-                                    else tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].facetItem.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet' title='Show only this predicate' style='color:#009933;cursor:pointer'>" + attribute + "</td><td id='pv-value' value='" + value + "'>" + label + "</td></tr>" });
+                                        tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].item.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet' title='Show only this predicate' style='color:#009933;cursor:pointer'>" + attribute + "</td><td id='pv-value' value='" + value + "'><a href='" + value + "' target='_blank'>" + label + "</a></td></tr>" });
+                                    else tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].item.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet' title='Show only this predicate' style='color:#009933;cursor:pointer'>" + attribute + "</td><td id='pv-value' value='" + value + "'>" + label + "</td></tr>" });
                                 } 
                                 else {
                                     // Value is uri
@@ -209,23 +222,27 @@ PivotViewer.Views.TableView = PivotViewer.Views.IPivotViewerView.subClass({
                 }
             }
             else {
-                facet = filter[i].facetItem.FacetByName[selectedFacet];
-                    
-                for (l = 0; l < facet.FacetValues.length; l++) {
-                    var value = facet.FacetValues[l].Value, label = facet.FacetValues[l].Label;
+                //facet = filter[i].facetItem.FacetByName[selectedFacet];
+                facet = filter[i].item._facetByName[selectedFacet];
+                  
+                //for (l = 0; l < facet.FacetValues.length; l++) {
+                for (l = 0; l < facet.values.length; l++) {
+                    //var value = facet.FacetValues[l].Value, label = facet.FacetValues[l].Label;
+                    var value = facet.values[l].value, label = facet.values[l].label;
                     var sortKeyValue;
                     if (sortKey == 'pv-key') sortKeyValue = entity;
                     else if (sortKey == 'pv-facet') sortKeyValue = selectedFacet;
                     else if (sortKey == 'pv-value') sortKeyValue = value;
 
                     // Colour blue if in the filter
-                    if (PivotCollection.GetFacetCategoryByName(selectedFacet).IsFilterVisible) {
+                    if (PivotCollection.getCategoryByName(selectedFacet).IsFilterVisible) {
                         // Link out image if item has href
-                        if (filter[i].facetItem.Href) {
+                        //if (filter[i].facetItem.Href) {
+                        if (filter[i].item.Href) {
                             // Value is uri
                             if (this.IsUri(value))
-                                tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].facetItem.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet' title='Clear predicate selection' style='color:#009933;cursor:pointer'>" + selectedFacet + "</td><td id='pv-value' value='" + value + "' title='Filter on this value' style='color:#009933;cursor:pointer'>" + value + " <a href='" + value + "' target=\"_blank\"><img style='cursor:default;' id=pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td></tr>" });
-                            else tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].facetItem.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet' title='Clear predicate selection' style='color:#009933;cursor:pointer'>" + selectedFacet + "</td><td id='pv-value' value='" + value + "' title='Filter on this value' style='color:#009933;cursor:pointer'>" + label + "</td></tr>" });
+                                tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].item.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet' title='Clear predicate selection' style='color:#009933;cursor:pointer'>" + selectedFacet + "</td><td id='pv-value' value='" + value + "' title='Filter on this value' style='color:#009933;cursor:pointer'>" + value + " <a href='" + value + "' target=\"_blank\"><img style='cursor:default;' id=pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td></tr>" });
+                            else tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Toggle item selection' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].item.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet' title='Clear predicate selection' style='color:#009933;cursor:pointer'>" + selectedFacet + "</td><td id='pv-value' value='" + value + "' title='Filter on this value' style='color:#009933;cursor:pointer'>" + label + "</td></tr>" });
                         } 
                         else {
                             // Value is uri
@@ -236,11 +253,12 @@ PivotViewer.Views.TableView = PivotViewer.Views.IPivotViewerView.subClass({
                     } 
                     else {
                         // Link out image if item has href
-                        if (filter[i].facetItem.Href) { 
+                        //if (filter[i].facetItem.Href) {
+                        if (filter[i].item.Href) { 
                             // Value is uri
                             if (this.IsUri(value))
-                                tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Click the cell to select this item' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].facetItem.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet' title='Clear predicate selection' style='color:#009933;cursor:pointer'>" + selectedFacet + "</td><td id='pv-value' value='" + value + "'><a href='" + value + "' target='_blank'>" + label + "</a></td></tr>" });
-                            else tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Click the cell to select this item' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].facetItem.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet' title='Clear predicate selection' style='color:#009933;cursor:pointer'>" + selectedFacet + "</td><td id='pv-value' value='" + value + "'>" + label + "</td></tr>" });
+                                tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Click the cell to select this item' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].item.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet' title='Clear predicate selection' style='color:#009933;cursor:pointer'>" + selectedFacet + "</td><td id='pv-value' value='" + value + "'><a href='" + value + "' target='_blank'>" + label + "</a></td></tr>" });
+                            else tableRows.push({ key: sortKeyValue, value: "<tr class='pv-tableview-" + oddOrEven + "'><td id='pv-key' itemid='" + id + "'title='Click the cell to select this item' style='color:#009933;cursor:pointer'>" + entity + " <a href=" + filter[i].item.Href.replace(/'/g, "%27") + " target=\"_blank\"><img style='cursor:default;' id='pv-linkout' title='Follow the link' src='images/goout.gif'></img></a></td><td id='pv-facet' title='Clear predicate selection' style='color:#009933;cursor:pointer'>" + selectedFacet + "</td><td id='pv-value' value='" + value + "'>" + label + "</td></tr>" });
                         } 
                         else {
                             // Value is uri
@@ -279,8 +297,8 @@ PivotViewer.Views.TableView = PivotViewer.Views.IPivotViewerView.subClass({
          
             tableContent += "</table>";
             table.append(tableContent);
-            $('#pv-table-data').colResizable({disable:true});
-            $('#pv-table-data').colResizable({disable:false});
+            //$('#pv-table-data').colResizable({disable:true});
+            //$('#pv-table-data').colResizable({disable:false});
 
             // Table view events
             $('.pv-tableview-heading').on('click', function (e) {
@@ -315,7 +333,7 @@ PivotViewer.Views.TableView = PivotViewer.Views.IPivotViewerView.subClass({
             }); 
         }
     },
-    SetSelected: function (item) {
+    setSelected: function (item) {
         this._super(item);
         if (item == null) this.CreateTable (this.filter, this.selectedFacet);
         else this.CreateTable ([item], this.selectedFacet);
