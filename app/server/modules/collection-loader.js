@@ -199,6 +199,10 @@ exports.setImgProperty = function(data, collection, callback){
     //var valCol = collection['column'];
     var shapeCol = collection['sColumn'];
     var colorCol = collection['cColumn'];
+
+    if(shapeCol === undefined) shapeCol = '|^';
+    if(colorCol === undefined) colorCol = '|^';
+
     var color;
     var shape;
 

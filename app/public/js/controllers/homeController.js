@@ -405,7 +405,7 @@ $(document).on('click', '#select-tags-submit',  function(){
 			'<div class="col-xs-4"> <input id="pv-map" class="checkbox-custom" type="checkbox">'+
 			'<label for="pv-map" class="checkbox-custom-label">Map</label> </div>'+
 			'<div class="col-xs-4"><input id="pv-r" class="checkbox-custom" type="checkbox">'+
-			'<label for="pv-r" class="checkbox-custom-label">R</label></div></div>'+
+			'<label for="pv-r" class="checkbox-custom-label">R</label></div></div><div class="row">'+
 			'<div class="col-xs-4"><input id="pv-table" class="checkbox-custom" type="checkbox">'+
 			'<label for="pv-table" class="checkbox-custom-label">Table</label></div></div>'
 		);
