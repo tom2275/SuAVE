@@ -1065,8 +1065,8 @@ red to yellow to green to blue
                                 }
                             }
                             // it's auto geocoding... don't want it to do that.
-                            // else if (false){
-                            else {
+                             else if (!that.hasGeometry){
+                            //else {
                                 // Not in local or persistent cache so will have to use geocode service
                                 if (g < 1000) {//limiting the number of items to geocode at once to 1000 for now
                                     if (this.itemsToGeocode[geoLoc] == undefined) {
